@@ -1,7 +1,16 @@
-import './globals.css'
-import { Inter } from 'next/font/google'
+import './globals.css';
+import { DM_Serif_Display, DM_Sans } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'] })
+const dm_serif_display = DM_Serif_Display({ 
+  weight: ["400"], 
+  subsets: [ "latin" ],
+  variable: '--font-display'
+});
+const dm_sans = DM_Sans({ 
+  weight: ["300", "500", "600", "700"], 
+  subsets: [ "latin" ],
+  variable: '--font-sans'
+});
 
 export const metadata = {
   title: 'Create Next App',
@@ -14,8 +23,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className='w-screen h-screen'>
+      <body 
+        className={`${dm_serif_display.variable} ${dm_sans.variable}
+          w-full h-full
+          overflow-hidden`
+        }
+      >
+        {children}
+      </body>
     </html>
   )
 }

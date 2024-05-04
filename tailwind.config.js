@@ -16,6 +16,11 @@ module.exports = {
     fontFamily: {
       display: ['var(--font-display)', 'serif'],
       sans: ['var(--font-sans)', 'sans-serif']
+    },
+    colors: {
+      black: '#000912',
+      white: '#FFFFFF',
+      dark_slate_gray: '#2A4A56'
     }
   },
   plugins: [],

@@ -1,5 +1,6 @@
 import './globals.css';
 import { DM_Serif_Display, DM_Sans } from 'next/font/google';
+import { TourismContextProvider } from '@/store/tourismStore';
 
 const dm_serif_display = DM_Serif_Display({ 
   weight: ["400"], 
@@ -24,14 +25,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className='w-screen h-screen'>
-      <body 
-        className={`${dm_serif_display.variable} ${dm_sans.variable}
-          w-full h-full
-          overflow-hidden`
-        }
-      >
-        {children}
-      </body>
+      <TourismContextProvider>
+        <body 
+          className={`${dm_serif_display.variable} ${dm_sans.variable}
+            w-full h-full
+            overflow-hidden`
+          }
+        >
+          {children}
+        </body>
+      </TourismContextProvider>
     </html>
   )
 }

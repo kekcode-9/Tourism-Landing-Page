@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useContext } from "react";
+import React, { useEffect, useRef, useContext, useState } from "react";
 import gsap from "gsap";
 import { CldImage } from "next-cloudinary";
 import constants from "@/utilities/constants";
@@ -12,11 +12,11 @@ import { TourismContext } from "@/store/tourismStore";
 
 const { TOGGLE_NAV } = ACTIONS;
 
-const { LAND_OF_CLOUDS, GLIMPSE, PLAN_TRAVEL } = constants;
+const { LAND_OF_CLOUDS, GLIMPSE, PLAN_TRIP } = constants;
 
 gsap.config({
-  force3D: true
-})
+  force3D: true,
+});
 
 export default function EntryLandingPage() {
   const imageRef = useRef<HTMLImageElement>(null);
@@ -24,7 +24,9 @@ export default function EntryLandingPage() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLDivElement>(null);
 
-  const {dispatch} = useContext(TourismContext);
+  const { dispatch } = useContext(TourismContext);
+
+  const [showGlimpseText, toggleShowGlimpseText] = useState<boolean>(false);
 
   useEffect(() => {
     if (imageRef.current) {
@@ -64,6 +66,7 @@ export default function EntryLandingPage() {
           {
             opacity: 1,
             duration: 1,
+            onComplete: () => toggleShowGlimpseText(true),
           },
           "<+=0.1"
         )
@@ -71,9 +74,9 @@ export default function EntryLandingPage() {
           display: "none",
         })
         .to(taglineRef.current, {
-            delay: 0.5,
-            opacity: 1,
-            duration: 1
+          delay: 0.5,
+          opacity: 1,
+          duration: 1,
         });
     }
     if (overlayRef.current) {
@@ -83,6 +86,13 @@ export default function EntryLandingPage() {
         ease: "power1.out",
       });
     }
+  
+  return () => {
+    // dispatch({
+    //   type: TOGGLE_NAV,
+    //   payload: true
+    // });
+  }
   }, [imageRef, overlayRef]);
 
   return (
@@ -102,7 +112,7 @@ export default function EntryLandingPage() {
       />
       <CldImage
         ref={lakeImageRef}
-        src="https://res.cloudinary.com/dxvx3y6ch/image/upload/f_auto,q_auto/v1/references/tourism/wo4fauoa1ed4otzuaadw"
+        src="https://res.cloudinary.com/dxvx3y6ch/image/upload/f_auto,q_auto/v1/tourism/pn6ehncwz5yecfsukysh"
         alt="Umiam lake meghalaya"
         fill
         className="object-cover hidden 
@@ -124,26 +134,28 @@ export default function EntryLandingPage() {
         opacity-0"
       >
         <Typography>{LAND_OF_CLOUDS}</Typography>
-        <CTA label={PLAN_TRAVEL} />
+        <CTA label={PLAN_TRIP} />
       </div>
-      <div
-        className="down-arrow-container
+      {showGlimpseText && (
+        <div
+          className="down-arrow-container
         absolute bottom-[1rem] left-0 right-0 m-auto
         flex flex-col items-center gap-2"
-      >
-        <Typography>
-          <u>{GLIMPSE}</u>
-        </Typography>
-        <div
-          className="w-[2rem] h-[2rem]
-          lg:w-[3rem] lg:h-[3rem]"
         >
-          <DownArrow/>
+          <Typography>
+            <u>{GLIMPSE}</u>
+          </Typography>
+          <div
+            className="w-[2rem] h-[2rem]
+          lg:w-[3rem] lg:h-[3rem]"
+          >
+            <DownArrow />
+          </div>
         </div>
-      </div>
+      )}
       <CldImage
         ref={imageRef}
-        src="https://res.cloudinary.com/dxvx3y6ch/image/upload/f_auto,q_auto/v1/references/tourism/vmlknxcqkc6tjbazxtr5"
+        src="https://res.cloudinary.com/dxvx3y6ch/image/upload/f_auto,q_auto/v1/tourism/obc3l6nl82awssncluwg"
         alt="green mountains of meghalaya"
         fill
         className="absolute top-0 left-0 object-cover 

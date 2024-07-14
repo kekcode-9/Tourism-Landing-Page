@@ -14,8 +14,10 @@ export default function CTA({
     <div
       className={`relative z-30
       flex items-center justify-center
-      w-[12rem] h-[3rem]
-      ${smallButton ? 'lg:w-[12rem] lg:h-[3.5rem]' : 'lg:w-[15.5rem] lg:h-[3.75rem] '}
+      w-fit h-fit
+      md:w-[9rem] md:h-[3rem]
+      max-md:px-4 max-md:py-2
+      ${smallButton ? 'lg:w-[10rem] lg:h-[2.5rem]' : 'lg:w-[15.5rem] lg:h-[3.75rem] '}
       bg-black 
       border border-white
       rounded-full

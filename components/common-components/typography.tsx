@@ -16,7 +16,7 @@ export default function Typography({
         {
             isHeader ?
             <h2
-                className='font-display text-8xl'
+                className={`font-display ${size || 'text-8xl'}`}
             >
                 {
                     children

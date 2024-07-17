@@ -28,8 +28,9 @@ export default function RootLayout({
       <TourismContextProvider>
         <body 
           className={`${dm_serif_display.variable} ${dm_sans.variable}
+            relative
             w-full h-full
-            overflow-hidden`
+            `
           }
         >
           {children}

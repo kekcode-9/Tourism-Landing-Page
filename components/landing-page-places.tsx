@@ -1,9 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useContext, useLayoutEffect } from 'react';
 import gsap from 'gsap';
+import { TourismContext } from '@/store/tourismStore';
 import Typography from './common-components/typography';
 import constants from '@/utilities/constants';
+import { ACTIONS } from '@/store/actions';
 
 const { PLACES } = constants;
+
+const { SET_PLACES_SCROLL_POS } = ACTIONS;
 
 type placesTextType = {
   name: ((typeof PLACES)[number])['name'],
@@ -28,6 +32,8 @@ PLACES.map((place, i) => {
 })
 
 export default function Places() {
+  const { dispatch } = useContext(TourismContext);
+
   const imgWrapperRef = useRef<HTMLDivElement | null>(null);
   const imagesRefArr = useRef<(HTMLDivElement | null)[]>([]);
   const textContainerRef = useRef<HTMLDivElement | null>(null);
@@ -117,6 +123,20 @@ export default function Places() {
     }
   }, [currPlaceIndex])
 
+  useLayoutEffect(() => {
+    /**
+     * set placesScrollPos
+     */
+    dispatch({
+      type: SET_PLACES_SCROLL_POS,
+      payload: currPlaceIndex ? (
+        currPlaceIndex === placesText.length - 1 ?
+          'end' :
+          'middle'
+      ) : 'start'
+    })
+  }, [currPlaceIndex])
+
   const scroller = (newPlaceIndex: number, scrollUp: boolean, isKeyPress: boolean) => {
     // scroll text
     const nextTextPos = textRefArr.current[newPlaceIndex]?.offsetTop || 0;
@@ -168,6 +188,7 @@ export default function Places() {
   }, [currPlaceIndex])
 
   const handleWheelEvent = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
     if (debounceTimer) {
       console.log(`debounced`);
       clearTimeout(debounceTimer);
@@ -203,7 +224,7 @@ export default function Places() {
 
   return (
     <div
-      className='content-div
+      className='landing-page-places-content-div
       relative
       flex flex-col items-center justify-start
       w-screen h-screen 
@@ -215,11 +236,12 @@ export default function Places() {
         /**
          * in desktop we want to make the text take up the entire screen when devicePixelRation >= 1.5
          * in mobile we do not want to make changes based on device pixel ratio
+         * ${window.devicePixelRatio < 1.5 ? 'z-20' : 'z-0 sm:z-20'}
          */
       }
       <div ref={textContainerRef}
         className={`texts-container
-        relative ${window.devicePixelRatio < 1.5 ? 'z-20' : 'z-0 sm:z-20'}
+        relative z-20
         flex flex-col items-center justify-start 
         w-screen  
         h-[51vh]

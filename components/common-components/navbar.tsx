@@ -9,7 +9,7 @@ import { TourismContext } from "@/store/tourismStore";
 
 export default function Navbar() {
   const { state, dispatch } = useContext(TourismContext);
-  const { showNav } = state;
+  const { showEntry } = state;
 
   const [showMenuOnMobile, setShowMenuOnMobile] = useState<boolean>(false);
 
@@ -50,8 +50,6 @@ export default function Navbar() {
     }
   }, [showMenuOnMobile, burgerMenuRef, menuItemsRef])
 
-  if (showNav) return;
-
   return (
     <div
       className="navbar-container
@@ -66,7 +64,7 @@ export default function Navbar() {
         py-4 px-4
         sm:py-8 sm:px-16
         bg-white 
-        border-b-[1px] border-b-white"
+        border-b-[1px] border-b-white bg-opacity-15"
       >
         <div
           className="max-lg:flex items-center gap-4
@@ -103,7 +101,8 @@ export default function Navbar() {
         className={`hidden flex-col sm:flex-row items-center justify-center gap-16
         py-8
         text-dark_slate_gray
-        bg-[#ccdcdb] scale-y-0
+        bg-columbia_blue bg-opacity-40 backdrop-blur-[8px] 
+        scale-y-0
         `}
       >
         {Object.entries(constants.NAV).map(

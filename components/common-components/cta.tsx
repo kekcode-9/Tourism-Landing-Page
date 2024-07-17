@@ -17,7 +17,7 @@ export default function CTA({
       w-fit h-fit
       md:w-[9rem] md:h-[3rem]
       max-md:px-4 max-md:py-2
-      ${smallButton ? 'lg:w-[10rem] lg:h-[2.5rem]' : 'lg:w-[15.5rem] lg:h-[3.75rem] '}
+      ${smallButton ? 'lg:w-[8rem] lg:h-[2.5rem]' : 'lg:w-[12rem] lg:h-[3.75rem] '}
       bg-black 
       border border-white
       rounded-full

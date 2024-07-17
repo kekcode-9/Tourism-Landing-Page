@@ -10,7 +10,7 @@ import DownArrow from "./svg-components/down-arrow-svg";
 import { ACTIONS } from "@/store/actions";
 import { TourismContext } from "@/store/tourismStore";
 
-const { TOGGLE_NAV } = ACTIONS;
+const { TOGGLE_SHOW_ENTRY } = ACTIONS;
 
 const { LAND_OF_CLOUDS, GLIMPSE, PLAN_TRIP } = constants;
 
@@ -18,13 +18,17 @@ gsap.config({
   force3D: true,
 });
 
-export default function EntryLandingPage() {
+export default function EntryLandingPage({
+  showPage
+}: {
+  showPage: boolean
+}) {
   const imageRef = useRef<HTMLImageElement>(null);
   const lakeImageRef = useRef<HTMLImageElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLDivElement>(null);
 
-  const { dispatch } = useContext(TourismContext);
+  const { state, dispatch } = useContext(TourismContext);
 
   const [showGlimpseText, toggleShowGlimpseText] = useState<boolean>(false);
 
@@ -86,20 +90,17 @@ export default function EntryLandingPage() {
         ease: "power1.out",
       });
     }
-  
-  return () => {
-    // dispatch({
-    //   type: TOGGLE_NAV,
-    //   payload: true
-    // });
-  }
   }, [imageRef, overlayRef]);
 
   return (
     <div
-      className="relative 
-      flex items-center justify-center
-      w-full h-full"
+      className={`
+        entry-landing-page
+        relative 
+        ${showPage ? 'flex' : 'hidden'}
+        flex items-center justify-center
+        w-full h-full  
+      `}
     >
       <NameSVG />
       <div
@@ -140,7 +141,14 @@ export default function EntryLandingPage() {
         <div
           className="down-arrow-container
         absolute bottom-[1rem] left-0 right-0 m-auto
-        flex flex-col items-center gap-2"
+        flex flex-col items-center gap-2
+        cursor-pointer"
+        onClick={() => {
+          dispatch({
+            type: TOGGLE_SHOW_ENTRY,
+            payload: false
+          })
+        }}
         >
           <Typography>
             <u>{GLIMPSE}</u>

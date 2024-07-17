@@ -20,7 +20,8 @@ module.exports = {
     colors: {
       black: '#000912',
       white: '#FFFFFF',
-      dark_slate_gray: '#2A4A56'
+      dark_slate_gray: '#2A4A56',
+      columbia_blue: '#CCDCDB'
     },
     screens: {
       'sm': '640px',

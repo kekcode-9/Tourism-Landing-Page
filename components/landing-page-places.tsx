@@ -210,7 +210,7 @@ export default function Places() {
         }
         scroller(newPlaceIndex, scrollUp, false);
         setCurrPlaceIndex(newPlaceIndex);
-      }, 200)
+      }, 600)
     }
   }, [currPlaceIndex, imagesRefArr, textRefArr, imgWrapperRef, textRefArr])
 

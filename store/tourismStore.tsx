@@ -2,16 +2,21 @@
 import React, { createContext, useReducer, Dispatch} from "react";
 import { ACTIONS } from "./actions";
 
-const { TOGGLE_NAV } = ACTIONS;
+const { 
+    TOGGLE_SHOW_ENTRY,
+    SET_PLACES_SCROLL_POS
+} = ACTIONS;
 
 type initialStateType = {
-    showNav: boolean,
-    currentLanding: 'home'
+    currentLanding: 'home',
+    showEntry: boolean,
+    placesScrollPos: 'start' | 'middle' | 'end'
 }
 
 const initialState: initialStateType = {
-    showNav: false,
-    currentLanding: 'home'
+    currentLanding: 'home',
+    showEntry: true,
+    placesScrollPos: 'start'
 }
 
 type actionType = {
@@ -23,10 +28,17 @@ function reducer (state: initialStateType, action: actionType) {
     const {type, payload} = action;
 
     switch(type) {
-        case TOGGLE_NAV: {
+        case TOGGLE_SHOW_ENTRY: {
             const finalState: initialStateType = {
                 ...state,
-                showNav: payload
+                showEntry: payload
+            }
+            return finalState;
+        }
+        case SET_PLACES_SCROLL_POS: {
+            const finalState: initialStateType = {
+                ...state,
+                placesScrollPos: payload
             }
             return finalState;
         }

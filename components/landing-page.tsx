@@ -1,15 +1,29 @@
 'use client';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { TourismContext } from '@/store/tourismStore';
 import Navbar from './common-components/navbar';
 import EntryLandingPage from './entry-landing-page';
-import Landing1 from './landing-page-1';
+import Places from './landing-page-places';
+import EventsPage from './events';
 
 export default function LandingPage() {
+  const { state } = useContext(TourismContext);
+  const { placesScrollPos, showEntry } = state;
+
+
   return (
     <>
-      {/* <Navbar/> */}
-      <EntryLandingPage/>
-      <Landing1/>
+      {
+        !showEntry && <Navbar/>
+      }
+      <EntryLandingPage showPage={showEntry} />
+      {
+        !showEntry && <Places/>
+      }
+      {
+        placesScrollPos === 'end' &&
+        <EventsPage/>
+      }
     </>
   )
 }

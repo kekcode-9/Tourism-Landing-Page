@@ -31,6 +31,14 @@ export default function Adventures() {
       return '50% 40%';
     }
   }
+
+  const getScrollTriggerEnd = () => {
+    const width = window.innerWidth;
+    if (width <= 1024) {
+      return '100% 10%';
+    }
+    return '140% 10%';
+  }
   
   useLayoutEffect(() => {
     let lastI = 0;

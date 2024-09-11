@@ -259,10 +259,10 @@ export default function Places() {
 
     let newPlaceIndex;
     let scrollUp = false;
-    if (currentTouchY > lastTouchY) {
+    if (currentTouchY < lastTouchY) {
       newPlaceIndex = currPlaceIndex + 1;
       scrollUp = false;
-    } else if (currentTouchY < lastTouchY) {
+    } else if (currentTouchY > lastTouchY) {
       newPlaceIndex = currPlaceIndex - 1;
       scrollUp = true;
     }

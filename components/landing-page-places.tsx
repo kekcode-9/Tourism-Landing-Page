@@ -255,6 +255,7 @@ export default function Places() {
      */
     const currentTouchY = e.changedTouches[0].clientY;
     setTestMessage('currentTouchY: ' + currentTouchY);
+    return;
     let msg = '';
 
     let newPlaceIndex;

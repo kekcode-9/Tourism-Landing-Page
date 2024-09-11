@@ -256,6 +256,7 @@ export default function Places() {
     const currentTouchY = e.touches[0].clientY;
     setLastTouchY(currentTouchY);
     if (lastTouchY === 0) {
+      setTestMessage('returning since lastTouchY is 0')
       return;
     }
     let newPlaceIndex;

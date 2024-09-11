@@ -272,6 +272,7 @@ export default function Places() {
           return;
         }
       scroller(newPlaceIndex, scrollUp);
+      setLastTouchY(currentTouchY);
     }
   }, [lastTouchY, currPlaceIndex])
 

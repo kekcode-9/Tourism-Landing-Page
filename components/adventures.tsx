@@ -96,7 +96,7 @@ export default function Adventures() {
              * width stays => 640px and its height keep reducing below 1000px.
              */
             start: window && getScrollTriggerStart(),
-            end: '140% 10%',
+            end: window && getScrollTriggerEnd(), // '140% 10%',
             markers: true,
             // scrub: (i && i<5) ? true : false,
             // onEnter onLeave onEnterBack onLeaveBack
@@ -167,7 +167,8 @@ export default function Adventures() {
                 sm:w-[400px] sm:h-[500px]
                 lg:w-[75dvh] lg:h-[100dvh]
                 2xl:w-[500px] 2xl:h-[600px]
-                2xl:mr-[500px]
+                2xl:mr-[500px] 
+                pointer-events-none
                 '
                 ref={e => imgRefsArr.current[i] = e}
               >

@@ -264,7 +264,7 @@ export default function Places() {
       newPlaceIndex = currPlaceIndex + 1;
       msg = 'scrolling down to index: ' + newPlaceIndex;
       scrollUp = false;
-    } else if (currentTouchY > lastTouchY && (currentTouchY - lastTouchY) > 10) {
+    } else if (currentTouchY > lastTouchY && (currentTouchY - lastTouchY) > 10 && lastTouchY !== 0) {
       newPlaceIndex = currPlaceIndex - 1;
       msg = 'scrolling up to index: ' + newPlaceIndex;
       scrollUp = true;
@@ -299,13 +299,7 @@ export default function Places() {
       w-screen h-screen 
       pt-20 sm:pt-[7.5625rem]%PLACES.length
       overflow-hidden
-      bg-white text-black' onTouchEnd={(e) => {
-        if (!lastTouchY) {
-          setLastTouchY(e.changedTouches[0].clientY);
-        } else {
-          handleTouchMove(e);
-        }
-      }}
+      bg-white text-black' onTouchEnd={handleTouchMove}
     >
       {
         /**

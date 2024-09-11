@@ -129,7 +129,7 @@ export default function Adventures() {
         items-center lg:max-2xl:items-start 2xl:items-center
         relative
         w-screen h-full
-        bg-dark_slate_gray
+        bg-white
         overflow-scroll'
         onWheel={(e) => {
           if (!currAdventure && e.deltaY < 0) {
@@ -156,7 +156,7 @@ export default function Adventures() {
                 flex-shrink-0
                 w-[250px] h-[350px]
                 sm:w-[400px] sm:h-[500px]
-                lg:w-[75vh] lg:h-[100vh]
+                lg:w-[75dvh] lg:h-[100dvh]
                 2xl:w-[500px] 2xl:h-[600px]
                 2xl:mr-[500px]
                 '

@@ -294,12 +294,12 @@ export default function Places() {
                 flex flex-col items-center gap-6
                 w-screen sm:w-[70vw] xl:w-[50vw]
                 max-sm:px-4
-                my-20 `} data-index={i}
+                mt-[2rem] sm:my-20 `} data-index={i}
               >
                 <Typography isHeader size='text-[2rem] sm:text-2xl'>
                   {name}
                 </Typography>
-                <Typography size='text-base sm:text-base'>
+                <Typography size='text-xs sm:text-base'>
                   {description}
                 </Typography>
               </div>

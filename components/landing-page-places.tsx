@@ -262,9 +262,11 @@ export default function Places() {
     let scrollUp = false;
     if (currentTouchY < lastTouchY && (lastTouchY - currentTouchY) > 16) {
       newPlaceIndex = currPlaceIndex + 1;
+      setTestMessage('scrolling down to index: ' + newPlaceIndex);
       scrollUp = false;
     } else if (currentTouchY > lastTouchY && (currentTouchY - lastTouchY) > 16) {
       newPlaceIndex = currPlaceIndex - 1;
+      setTestMessage('scrolling up to index: ' + newPlaceIndex);
       scrollUp = true;
     }
     if (newPlaceIndex) {

@@ -247,6 +247,34 @@ export default function Places() {
     }
   }, [currPlaceIndex, imagesRefArr, textRefArr, imgWrapperRef])
 
+  const handleTocuhMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    /**
+     * if e.touches[0].clientY reduces that means content is to be revealed from the bottom - scroll down
+     * if e.touches[0].clientY increases in value then content is to be revealed from above - scroll up
+     */
+    const currentTouchY = e.touches[0].clientY;
+    let newPlaceIndex;
+    let scrollUp = false;
+    if (currentTouchY < lastTouchY && (lastTouchY - currentTouchY) > 16) {
+      newPlaceIndex = currPlaceIndex + 1;
+      scrollUp = false;
+    } else if (currentTouchY > lastTouchY && (currentTouchY - lastTouchY) > 16) {
+      newPlaceIndex = currPlaceIndex - 1;
+      scrollUp = true;
+    }
+    if (newPlaceIndex) {
+      if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
+        newPlaceIndex > PLACES.length - 1 &&
+        dispatch({
+          type: TOGGLE_SHOW_ADVENTURES,
+          payload: true
+        });
+          return;
+        }
+      scroller(newPlaceIndex, scrollUp);
+    }
+  }, [lastTouchY, currPlaceIndex])
+
   /**
    * At 100% zoom level:
    * window.devicePixelRatio :
@@ -263,9 +291,7 @@ export default function Places() {
       w-screen h-screen 
       pt-20 sm:pt-[7.5625rem]%PLACES.length
       overflow-hidden
-      bg-white text-black' onTouchMove={(e) => {
-        setLastTouchY(e.touches[0].clientY)
-      }}
+      bg-white text-black' onTouchMove={handleTocuhMove}
     >
       {
         /**

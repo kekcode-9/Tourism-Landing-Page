@@ -9,6 +9,7 @@ import React, {
 import { CldImage } from 'next-cloudinary';
 import gsap from 'gsap';
 import { TourismContext } from '@/store/tourismStore';
+import ArrowThin from './svg-components/arrow-thin';
 import Typography from './common-components/typography';
 import constants from '@/utilities/constants';
 import { ACTIONS } from '@/store/actions';
@@ -51,8 +52,6 @@ export default function Places() {
   const [currPlaceIndex, setCurrPlaceIndex] = useState<number>(0);
   const [deviceType, setDeviceType] = useState<'desktop' | 'mobile' | ''>('');
   const [scrollUp, isScrollUp] = useState<boolean | null>(null);
-  const [lastTouchY, setLastTouchY] = useState<number>(0);
-  const [testMessage, setTestMessage] = useState<string>('');
 
   let debounceTimer: ReturnType<typeof setTimeout>;
 
@@ -248,37 +247,18 @@ export default function Places() {
     }
   }, [currPlaceIndex, imagesRefArr, textRefArr, imgWrapperRef])
 
-  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
-    /**
-     * if lastTouchY > currentTouchY --> reveal from bottom --> scroll down
-     * if e.touches[0].clientY increases in value then content is to be revealed from above - scroll up
-     */
-    const currentTouchY = e.changedTouches[0].clientY;
-    setTestMessage('currentTouchY: ' + currentTouchY);
-    let msg = '';
-
-    let newPlaceIndex;
-    let scrollUp = false;
-    if (currentTouchY < lastTouchY) {
-      newPlaceIndex = currPlaceIndex + 1;
-      scrollUp = false;
-    } else if (currentTouchY > lastTouchY) {
-      newPlaceIndex = currPlaceIndex - 1;
-      scrollUp = true;
-    }
-    if (newPlaceIndex) {
-      setTestMessage(msg + ' | calling scroller with index ' + newPlaceIndex);
-      if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
-        newPlaceIndex > PLACES.length - 1 &&
-        dispatch({
-          type: TOGGLE_SHOW_ADVENTURES,
-          payload: true
-        });
-          return;
+  const handleArrowIconClick = useCallback((up: boolean) => {
+    const newPlaceIndex = up ? currPlaceIndex - 1 : currPlaceIndex + 1;
+    if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
+      newPlaceIndex > PLACES.length - 1 &&
+      dispatch({
+        type: TOGGLE_SHOW_ADVENTURES,
+        payload: true
+      });
+        return;
       }
-      scroller(newPlaceIndex, scrollUp);
-    }
-  }, [lastTouchY, currPlaceIndex])
+    scroller(newPlaceIndex, up);
+  }, [currPlaceIndex])
 
   /**
    * At 100% zoom level:
@@ -292,13 +272,11 @@ export default function Places() {
     <div
       className='landing-page-places-content-div
       relative
-      flex flex-col items-center justify-start
+      flex flex-col items-center justify-end lg:justify-start
       w-screen h-screen 
-      pt-20 sm:pt-[7.5625rem]%PLACES.length
+      pt-20 
       overflow-hidden
       bg-white text-black' 
-      onTouchStart={(e) => setLastTouchY(e.touches[0].clientY)}
-      onTouchEnd={handleTouchMove}
     >
       {
         /**
@@ -321,7 +299,10 @@ export default function Places() {
         
         overflow-scroll text-center 
         text-dark_slate_gray
-        bg-white shadow-[0px_72px_77px_51px_rgba(255,255,255,1)] 
+        bg-white 
+        shadow-[-1px_-41px_102px_25px_rgba(255,255,255,1)] 
+        lg:shadow-[0px_72px_77px_51px_rgba(255,255,255,1)] 
+        max-lg:mb-[3rem]
         pointer-events-none`}
       >
         {
@@ -337,23 +318,46 @@ export default function Places() {
                 flex flex-col items-center gap-6
                 w-screen sm:w-[70vw] xl:w-[50vw]
                 max-sm:px-4
-                mt-[2rem] sm:my-20 `} data-index={i}
+                sm:my-20 `} data-index={i}
               >
                 <Typography isHeader size='text-[2rem] sm:text-2xl'>
                   {name} 
                 </Typography>
                 <Typography size='text-xs sm:text-base'>
-                  {/* {description} */}
-                  {currPlaceIndex} - {lastTouchY} - {testMessage}
+                  {description}
                 </Typography>
               </div>
             )
           })
         }
       </div>
+      <div
+        className='arrows 
+        absolute z-30 bottom-[2rem] right-[2rem]
+        max-lg:flex flex-col lg:hidden gap-4'
+      >
+        <div
+          className='up-arrow w-full h-fit 
+          p-2
+          bg-columbia_blue 
+          cursor-pointer'
+          onClick={() => handleArrowIconClick(true)}
+        >
+          <ArrowThin/>
+        </div>
+        <div
+          className='down-arrow w-full h-fit 
+          p-2
+          bg-columbia_blue 
+          cursor-pointer'
+          onClick={() => handleArrowIconClick(false)}
+        >
+          <ArrowThin downwards={true} />
+        </div>
+      </div>
       <div ref={imgWrapperRef}
         className='images-container
-        absolute bottom-0 left-0
+        absolute max-lg:top-[4.375rem] lg:bottom-0 left-0
         flex flex-col
         w-screen 
         h-[28vh] sm:h-[80vh]

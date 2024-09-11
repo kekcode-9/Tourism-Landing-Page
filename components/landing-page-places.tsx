@@ -247,12 +247,16 @@ export default function Places() {
     }
   }, [currPlaceIndex, imagesRefArr, textRefArr, imgWrapperRef])
 
-  const handleTocuhMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     /**
      * if e.touches[0].clientY reduces that means content is to be revealed from the bottom - scroll down
      * if e.touches[0].clientY increases in value then content is to be revealed from above - scroll up
      */
     const currentTouchY = e.touches[0].clientY;
+    setLastTouchY(currentTouchY);
+    if (lastTouchY === 0) {
+      return;
+    }
     let newPlaceIndex;
     let scrollUp = false;
     if (currentTouchY < lastTouchY && (lastTouchY - currentTouchY) > 16) {
@@ -272,7 +276,6 @@ export default function Places() {
           return;
         }
       scroller(newPlaceIndex, scrollUp);
-      setLastTouchY(currentTouchY);
     }
   }, [lastTouchY, currPlaceIndex])
 
@@ -292,7 +295,7 @@ export default function Places() {
       w-screen h-screen 
       pt-20 sm:pt-[7.5625rem]%PLACES.length
       overflow-hidden
-      bg-white text-black' onTouchMove={handleTocuhMove}
+      bg-white text-black' onTouchMove={handleTouchMove}
     >
       {
         /**
@@ -334,7 +337,7 @@ export default function Places() {
                 mt-[2rem] sm:my-20 `} data-index={i}
               >
                 <Typography isHeader size='text-[2rem] sm:text-2xl'>
-                  {name} - {lastTouchY}
+                  {name} - {lastTouchY} - {currPlaceIndex}
                 </Typography>
                 <Typography size='text-xs sm:text-base'>
                   {description}

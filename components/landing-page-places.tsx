@@ -124,9 +124,14 @@ export default function Places() {
       }
     }
     document.addEventListener('keydown', keyDownHandler);
+    window.addEventListener('wheel', (e) => {
+      console.log('wheeling with deltaY: ', e.deltaY);
+      handleWheelEvent(e);
+    });
 
     return () => {
       document.removeEventListener('keydown', keyDownHandler);
+      window.removeEventListener('wheel', handleWheelEvent);
     }
   }, [currPlaceIndex])
 
@@ -208,7 +213,7 @@ export default function Places() {
     scroller(newPlaceIndex, scrollUp);
   }, [currPlaceIndex])
 
-  const handleWheelEvent = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
+  const handleWheelEvent = useCallback((e: WheelEvent) => {
     e.preventDefault();
     if (debounceTimer) {
       console.log(`debounced`);
@@ -225,7 +230,6 @@ export default function Places() {
        */ 
       debounceTimer = setTimeout(() => {
         const newPlaceIndex = (e.deltaY > 4) ? (currPlaceIndex + 1) : (currPlaceIndex - 1);
-        console.log(`newPlaceIndex: ${newPlaceIndex}`);
         if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
           newPlaceIndex > PLACES.length - 1 &&
           dispatch({
@@ -255,7 +259,7 @@ export default function Places() {
       w-screen h-screen 
       pt-20 sm:pt-[7.5625rem]%PLACES.length
       overflow-hidden
-      bg-white text-black' onWheel={handleWheelEvent}
+      bg-white text-black'
     >
       {
         /**

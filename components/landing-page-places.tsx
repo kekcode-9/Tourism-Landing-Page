@@ -268,15 +268,15 @@ export default function Places() {
     }
     if (newPlaceIndex) {
       setTestMessage(msg + ' | calling scroller with index ' + newPlaceIndex);
-      // if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
-      //   newPlaceIndex > PLACES.length - 1 &&
-      //   dispatch({
-      //     type: TOGGLE_SHOW_ADVENTURES,
-      //     payload: true
-      //   });
-      //     return;
-      // }
-      // scroller(newPlaceIndex, scrollUp);
+      if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
+        newPlaceIndex > PLACES.length - 1 &&
+        dispatch({
+          type: TOGGLE_SHOW_ADVENTURES,
+          payload: true
+        });
+          return;
+      }
+      scroller(newPlaceIndex, scrollUp);
     }
   }, [lastTouchY, currPlaceIndex])
 

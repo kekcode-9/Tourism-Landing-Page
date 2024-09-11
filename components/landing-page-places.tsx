@@ -255,23 +255,21 @@ export default function Places() {
      */
     const currentTouchY = e.touches[0].clientY;
     setLastTouchY(currentTouchY);
-    // if (lastTouchY === 0) {
-    //   setTestMessage('returning since lastTouchY is 0')
-    //   return;
-    // }
+    let msg = '';
+
     let newPlaceIndex;
     let scrollUp = false;
     if (currentTouchY < lastTouchY && (lastTouchY - currentTouchY) > 100) {
       newPlaceIndex = currPlaceIndex + 1;
-      setTestMessage('scrolling down to index: ' + newPlaceIndex);
+      msg = 'scrolling down to index: ' + newPlaceIndex;
       scrollUp = false;
     } else if (currentTouchY > lastTouchY && (currentTouchY - lastTouchY) > 100) {
       newPlaceIndex = currPlaceIndex - 1;
-      setTestMessage('scrolling up to index: ' + newPlaceIndex);
+      msg = 'scrolling up to index: ' + newPlaceIndex;
       scrollUp = true;
     }
     if (newPlaceIndex) {
-      setTestMessage('newPlaceIndex: ' + newPlaceIndex + ' | calling scroller')
+      setTestMessage(msg + ' | calling scroller with index ' + newPlaceIndex);
       if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
         newPlaceIndex > PLACES.length - 1 &&
         dispatch({
@@ -300,7 +298,11 @@ export default function Places() {
       w-screen h-screen 
       pt-20 sm:pt-[7.5625rem]%PLACES.length
       overflow-hidden
-      bg-white text-black' onTouchMove={handleTouchMove}
+      bg-white text-black' onTouchMove={(e) => {
+        if (Math.abs(e.touches[0].clientY - lastTouchY) > 100) {
+          handleTouchMove(e);
+        }
+      }}
     >
       {
         /**

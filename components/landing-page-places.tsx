@@ -129,9 +129,9 @@ export default function Places() {
       console.log('wheeling with deltaY: ', e.deltaY);
       handleWheelEvent(e);
     });
-    window.addEventListener('touchmove', (e) => {
-      setLastTouchY(e.touches[0].clientY)
-    })
+    // window.addEventListener('touchmove', (e) => {
+    //   setLastTouchY(e.touches[0].clientY)
+    // })
 
     return () => {
       document.removeEventListener('keydown', keyDownHandler);
@@ -263,7 +263,9 @@ export default function Places() {
       w-screen h-screen 
       pt-20 sm:pt-[7.5625rem]%PLACES.length
       overflow-hidden
-      bg-white text-black'
+      bg-white text-black' onTouchMove={(e) => {
+        setLastTouchY(e.touches[0].clientY)
+      }}
     >
       {
         /**

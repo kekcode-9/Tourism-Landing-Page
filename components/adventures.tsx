@@ -119,7 +119,7 @@ export default function Adventures() {
 
   return (
     <div className='relative 
-    w-screen h-screen 
+    w-screen h-[100dvh] 
     lg:pt-[6.5rem]
     bg-[#ffffff]'
     ref={pageRef}

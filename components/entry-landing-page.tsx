@@ -99,7 +99,7 @@ export default function EntryLandingPage({
         relative 
         ${showPage ? 'flex' : 'hidden'}
         flex items-center justify-center
-        w-full h-screen  
+        w-full h-[100dvh]  
       `}
     >
       <NameSVG />

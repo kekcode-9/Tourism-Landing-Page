@@ -6,6 +6,7 @@ import Arrows from './common-components/arrows';
 import { ACTIONS } from '@/store/actions';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import constants from '@/utilities/constants';
+import Typography from './common-components/typography';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -177,7 +178,6 @@ export default function Adventures() {
           className='fixed right-0 max-lg:top-[60%] top-[45%] 
           w-full lg:max-2xl:w-[600px] 2xl:w-[800px]
           max-lg:p-[1rem] lg:pr-[160px] 2xl:pr-[240px] 
-          max-lg:text-center
           mt-12
           text-dark_slate_gray 
           pointer-events-none
@@ -192,7 +192,9 @@ export default function Adventures() {
                       w-full 
                       pb-2'
                     >
-                      {adventure.name}
+                      <Typography isHeader={false} size='text-xs sm:text-base'>
+                        {adventure.name}
+                      </Typography>
                     </div>
                     <div
                       className='adventure-text-divider
@@ -203,7 +205,9 @@ export default function Adventures() {
                       className='adventure-description-text
                       pt-4'
                     >
-                      {adventure.description}
+                      <Typography isHeader={false} size='text-sx sm:text-base'>
+                        {adventure.description}
+                      </Typography>
                     </div>
                   </>
                 )

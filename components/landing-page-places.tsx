@@ -290,6 +290,7 @@ export default function Places() {
         flex flex-col items-center justify-start 
         w-screen  
         h-[51dvh]
+        lg:pt-20
         ${ 
           deviceType === 'desktop' ? 
           (window.devicePixelRatio < 1.3 ? 'sm:h-[30dvh]' : 'sm:h-screen') : 
@@ -317,7 +318,8 @@ export default function Places() {
                 flex flex-col items-center gap-6
                 w-screen sm:w-[70vw] xl:w-[50vw]
                 max-sm:px-4
-                sm:my-20 `} data-index={i}
+                sm:my-20 
+                max-lg:text-left`} data-index={i}
               >
                 <Typography isHeader size='text-[2rem] sm:text-2xl'>
                   {name} 

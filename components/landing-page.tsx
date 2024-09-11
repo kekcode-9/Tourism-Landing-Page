@@ -4,7 +4,6 @@ import { TourismContext } from '@/store/tourismStore';
 import Navbar from './common-components/navbar';
 import EntryLandingPage from './entry-landing-page';
 import Places from './landing-page-places';
-import PlacesToVisit from './places-to-visit';
 import Adventures from './adventures';
 
 export default function LandingPage() {

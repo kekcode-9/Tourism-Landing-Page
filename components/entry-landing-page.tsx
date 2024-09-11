@@ -140,7 +140,7 @@ export default function EntryLandingPage({
       {showGlimpseText && (
         <div
           className="down-arrow-container
-        absolute bottom-[2.5rem] left-0 right-0 m-auto
+        absolute bottom-[4rem] left-0 right-0 m-auto
         flex flex-col items-center gap-2
         cursor-pointer"
         onClick={() => {

@@ -128,7 +128,7 @@ export default function Adventures() {
         className='landing-page-adventures flex flex-col gap-4 
         items-center lg:max-2xl:items-start 2xl:items-center
         relative
-        w-screen h-full
+        w-screen h-[100dvh]
         bg-white
         overflow-scroll'
         onWheel={(e) => {

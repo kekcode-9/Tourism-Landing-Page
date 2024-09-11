@@ -273,8 +273,7 @@ export default function Places() {
       className='landing-page-places-content-div
       relative
       flex flex-col items-center justify-end lg:justify-start
-      w-screen h-screen 
-      pt-20 
+      w-screen h-[100dvh] 
       overflow-hidden
       bg-white text-black' 
     >
@@ -290,11 +289,11 @@ export default function Places() {
         relative z-20
         flex flex-col items-center justify-start 
         w-screen  
-        h-[51vh]
+        h-[51dvh]
         ${ 
           deviceType === 'desktop' ? 
-          (window.devicePixelRatio < 1.3 ? 'sm:h-[30vh]' : 'sm:h-screen') : 
-          'sm:h-[30vh]'
+          (window.devicePixelRatio < 1.3 ? 'sm:h-[30dvh]' : 'sm:h-screen') : 
+          'sm:h-[30dvh]'
         }
         
         overflow-scroll text-center 
@@ -340,7 +339,7 @@ export default function Places() {
         absolute max-lg:top-[4.375rem] lg:bottom-0 left-0
         flex flex-col
         w-screen 
-        h-[28vh] sm:h-[80vh]
+        h-[28dvh] sm:h-[80dvh]
         overflow-scroll 
         pointer-events-none'
       >
@@ -356,7 +355,7 @@ export default function Places() {
                   className='mask-inner
                   relative
                   w-full
-                  h-[28vh] sm:h-[80vh]'
+                  h-[28dvh] sm:h-[80dvh]'
                 >
                   <CldImage
                     src={image}

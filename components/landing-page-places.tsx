@@ -1,4 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState, useContext, useLayoutEffect } from 'react';
+import React, { 
+  useCallback, 
+  useEffect, 
+  useRef, 
+  useState, 
+  useContext, 
+  useLayoutEffect 
+} from 'react';
+import { CldImage } from 'next-cloudinary';
 import gsap from 'gsap';
 import { TourismContext } from '@/store/tourismStore';
 import Typography from './common-components/typography';
@@ -7,7 +15,7 @@ import { ACTIONS } from '@/store/actions';
 
 const { PLACES } = constants;
 
-const { SET_PLACES_SCROLL_POS } = ACTIONS;
+const { SET_PLACES_SCROLL_POS, TOGGLE_SHOW_ADVENTURES } = ACTIONS;
 
 type placesTextType = {
   name: ((typeof PLACES)[number])['name'],
@@ -32,7 +40,8 @@ PLACES.map((place, i) => {
 })
 
 export default function Places() {
-  const { dispatch } = useContext(TourismContext);
+  const { dispatch, state } = useContext(TourismContext);
+  const { placesScrollPos } = state;
 
   const imgWrapperRef = useRef<HTMLDivElement | null>(null);
   const imagesRefArr = useRef<(HTMLDivElement | null)[]>([]);
@@ -41,6 +50,7 @@ export default function Places() {
 
   const [currPlaceIndex, setCurrPlaceIndex] = useState<number>(0);
   const [deviceType, setDeviceType] = useState<'desktop' | 'mobile' | ''>('');
+  const [scrollUp, isScrollUp] = useState<boolean | null>(null);
 
   let debounceTimer: ReturnType<typeof setTimeout>;
 
@@ -55,21 +65,16 @@ export default function Places() {
     /**
      * show the 0th place after a remount
      */
-    setCurrPlaceIndex(0);
-    imgWrapperRef.current?.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-    textContainerRef.current?.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-    gsap.to(textRefArr.current[0], {
-      opacity: 1,
-      translateY: 0,
-      delay: 0.3,
-      duration: 0.5
-    })
+    const index = placesScrollPos === 'end' ? placesText.length - 1 : 0;
+    setCurrPlaceIndex(index); // when currPlaceIndex is updated, the useEffect depending on it will show the text animation
+    if (index && imgWrapperRef.current) {
+      imgWrapperRef.current.scrollTop = imgWrapperRef.current?.scrollHeight;
+    } else {
+      imgWrapperRef.current?.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
 
     /**
      * intersection observer for detecting a paragraph's entry into view
@@ -98,19 +103,21 @@ export default function Places() {
       })
     });
 
-    textRefArr.current?.forEach((textRef: HTMLDivElement | null) => {
-      textRef && observer.observe(textRef);
-    })
+    // textRefArr.current?.forEach((textRef: HTMLDivElement | null) => {
+    //   textRef && observer.observe(textRef);
+    // })
     
-  }, [imgWrapperRef.current, textContainerRef.current, textRefArr.current])
+  }, [
+    imgWrapperRef.current, 
+    textContainerRef.current, 
+    textRefArr.current
+  ])
 
   useEffect(() => {
     /**
      * scroll on keydown
      */
-    let isArrowPressed = false;
     const keyDownHandler = (e: KeyboardEvent) => {
-      isArrowPressed = true;
       // console.log(`keydown detected on document with code: ${e.code} | repeat: ${e.repeat}`);
       if (e.code === "ArrowUp" || e.code === "ArrowDown") {
         handleArrowPress(e.code);
@@ -124,42 +131,31 @@ export default function Places() {
   }, [currPlaceIndex])
 
   useLayoutEffect(() => {
+    if (textRefArr.current[currPlaceIndex] && scrollUp !== null) {
+      const tl = gsap.timeline(); 
+      /**
+       * during the set animation, we translate the div's translateY 9rem up or down based on whether the
+       * scroll direction is up or down respectively.
+       * That way, when the to animation sets the translateY back to 0 it will look like the div is
+       * sliding in from top ( for a scroll up ) or sliding up from below ( for a scroll down )
+       */
+      tl.set(textRefArr.current[currPlaceIndex], {
+        opacity: 0,
+        translateY: scrollUp ? '-9rem' : '9rem'
+      }).to(textRefArr.current[currPlaceIndex], {
+        opacity: 1,
+        translateY: 0,
+        duration: 0.5
+      })
+    }
     /**
      * set placesScrollPos
      */
-    dispatch({
-      type: SET_PLACES_SCROLL_POS,
-      payload: currPlaceIndex ? (
-        currPlaceIndex === placesText.length - 1 ?
-          'end' :
-          'middle'
-      ) : 'start'
-    })
-  }, [currPlaceIndex])
+    console.log(`placesScrollPos: dispatching with: ${currPlaceIndex ?(currPlaceIndex === placesText.length - 1 ? 'end' : 'middle') : 'start'}`)
+    
+  }, [currPlaceIndex, scrollUp])
 
-  const scroller = (newPlaceIndex: number, scrollUp: boolean, isKeyPress: boolean) => {
-    // scroll text
-    const nextTextPos = textRefArr.current[newPlaceIndex]?.offsetTop || 0;
-    const nextTextHeight = textRefArr.current[newPlaceIndex]?.clientHeight || 0;
-
-    const textContainerHeight = textContainerRef.current?.clientHeight || 0;
-
-    let nextTextTop = nextTextPos - (textContainerHeight / 2) + (nextTextHeight / 2); // nextTextBottom + textContainerHeight;
-    if (isKeyPress) {
-      nextTextTop = scrollUp ? nextTextTop : nextTextTop - 50;
-    }
-
-    textContainerRef.current?.scrollTo({
-      top: nextTextTop, // : nextTextPos - textContainerRef.current?.offsetTop ,
-      behavior: 'smooth'
-    });
-
-    gsap.to(textRefArr.current[currPlaceIndex], {
-      opacity: 0,
-      translateY: !scrollUp ? '-144px' : '144px',
-      duration: 0.5
-    });
-
+  const scroller = (newPlaceIndex: number, scrollUp: boolean) => {
     // scroll image
     const nextImgPos = imagesRefArr.current[newPlaceIndex]?.offsetTop || 0;
     const nextImgHeight = imagesRefArr.current[newPlaceIndex]?.offsetHeight || 0;
@@ -173,18 +169,43 @@ export default function Places() {
       top: newPlaceIndex ? nextImgTop : 0, // : nextImgPos - imgWrapperRef.current?.offsetTop ,
       behavior: 'smooth'
     });
+
+    // scroll text
+    let lastIndex = scrollUp ? newPlaceIndex + 1 : newPlaceIndex - 1;
+
+    const tl = gsap.timeline();
+    tl.to(textRefArr.current[lastIndex], {
+      translateY: scrollUp ? '9rem' : '-9rem',
+      opacity: 0,
+      duration: 0.5,
+      onComplete: () => {
+        setCurrPlaceIndex(newPlaceIndex);
+        isScrollUp(scrollUp);
+        dispatch({
+          type: SET_PLACES_SCROLL_POS,
+          payload: newPlaceIndex ? (
+            newPlaceIndex === placesText.length - 1 ?
+              'end' :
+              'middle'
+          ) : 'start'
+        })
+      }
+    });
   }
 
   const handleArrowPress = useCallback((code: string) => {
     const scrollUp = code === 'ArrowUp';
-    console.log(`currPlaceIndex: ${currPlaceIndex}`);
+    console.log(`handleArrowPress | currPlaceIndex: ${currPlaceIndex}`);
     const newPlaceIndex = !scrollUp ? (currPlaceIndex + 1) : (currPlaceIndex - 1);
     if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
-      console.log(`returning with newPlaceIndex: ${newPlaceIndex} and Places length: ${PLACES.length}`);
+      newPlaceIndex > PLACES.length - 1 &&
+      dispatch({
+        type: TOGGLE_SHOW_ADVENTURES,
+        payload: true
+      });
       return;
     }
-    scroller(newPlaceIndex, scrollUp, true);
-    setCurrPlaceIndex(newPlaceIndex);
+    scroller(newPlaceIndex, scrollUp);
   }, [currPlaceIndex])
 
   const handleWheelEvent = useCallback((e: React.WheelEvent<HTMLDivElement>) => {
@@ -204,15 +225,19 @@ export default function Places() {
        */
       debounceTimer = setTimeout(() => {
         const newPlaceIndex = (e.deltaY > 4) ? (currPlaceIndex + 1) : (currPlaceIndex - 1);
+        console.log(`newPlaceIndex: ${newPlaceIndex}`);
         if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
-          console.log(`returning with newPlaceIndex: ${newPlaceIndex} and Places length: ${PLACES.length}`);
-          return;
-        }
-        scroller(newPlaceIndex, scrollUp, false);
-        setCurrPlaceIndex(newPlaceIndex);
+          newPlaceIndex > PLACES.length - 1 &&
+          dispatch({
+            type: TOGGLE_SHOW_ADVENTURES,
+            payload: true
+          });
+            return;
+          }
+        scroller(newPlaceIndex, scrollUp);
       }, 200)
     }
-  }, [currPlaceIndex, imagesRefArr, textRefArr, imgWrapperRef, textRefArr])
+  }, [currPlaceIndex, imagesRefArr, textRefArr, imgWrapperRef])
 
   /**
    * At 100% zoom level:
@@ -259,14 +284,17 @@ export default function Places() {
         {
           placesText.map((texts, i) => {
             const {name, description} = texts;
-            
+            // opacity-0 translate-y-36
+            if (i !== currPlaceIndex) {
+              return <></>;
+            }
             return (
               <div key={i} ref={(ele) => textRefArr.current[i] = ele}
                 className={`text-wrapper
                 flex flex-col items-center gap-6
                 w-screen sm:w-[70vw] xl:w-[50vw]
                 max-sm:px-4
-                my-20 opacity-0 translate-y-36`} data-index={i}
+                my-20 `} data-index={i}
               >
                 <Typography isHeader size='text-[2rem] sm:text-2xl'>
                   {name}
@@ -299,12 +327,15 @@ export default function Places() {
                 <div
                   className='mask-inner
                   relative
+                  w-full
                   h-[28vh] sm:h-[80vh]'
                 >
-                  <img
+                  <CldImage
                     src={image}
+                    alt={''}
+                    fill
                     className='place-image 
-                    w-full h-full object-cover'
+                    object-cover'
                   />
                 </div>
               </div>

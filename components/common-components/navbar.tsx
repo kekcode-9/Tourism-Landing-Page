@@ -64,7 +64,8 @@ export default function Navbar() {
         py-4 px-4
         sm:py-8 sm:px-16
         bg-white 
-        border-b-[1px] border-b-white bg-opacity-15"
+        border-b-[1px] border-b-white 
+        bg-opacity-[0.4] backdrop-blur-[40px]"
       >
         <div
           className="max-lg:flex items-center gap-4

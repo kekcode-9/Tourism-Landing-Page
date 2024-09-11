@@ -4,19 +4,22 @@ import { ACTIONS } from "./actions";
 
 const { 
     TOGGLE_SHOW_ENTRY,
-    SET_PLACES_SCROLL_POS
+    SET_PLACES_SCROLL_POS,
+    TOGGLE_SHOW_ADVENTURES
 } = ACTIONS;
 
 type initialStateType = {
     currentLanding: 'home',
     showEntry: boolean,
-    placesScrollPos: 'start' | 'middle' | 'end'
+    placesScrollPos: 'start' | 'middle' | 'end',
+    showAdventures: boolean
 }
 
 const initialState: initialStateType = {
     currentLanding: 'home',
     showEntry: true,
-    placesScrollPos: 'start'
+    placesScrollPos: 'start',
+    showAdventures: false
 }
 
 type actionType = {
@@ -39,6 +42,13 @@ function reducer (state: initialStateType, action: actionType) {
             const finalState: initialStateType = {
                 ...state,
                 placesScrollPos: payload
+            }
+            return finalState;
+        }
+        case TOGGLE_SHOW_ADVENTURES: {
+            const finalState: initialStateType = {
+                ...state,
+                showAdventures: payload
             }
             return finalState;
         }

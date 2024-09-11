@@ -49,3 +49,31 @@ body {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+.rectangle {
+  --rect-width: 100%;
+}
+
+.rectangle::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--rect-width);
+  height: 100%;
+  background-color: white;
+}
+
+/* .mask-inner {
+  --height: 100%;
+}
+
+.mask-inner::after {
+  content: '';
+  height: var(--height);
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: white;
+} */

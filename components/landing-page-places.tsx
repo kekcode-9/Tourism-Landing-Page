@@ -250,23 +250,20 @@ export default function Places() {
 
   const handleTouchMove = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
     /**
-     * if e.touches[0].clientY reduces that means content is to be revealed from the bottom - scroll down
+     * if lastTouchY > currentTouchY --> reveal from bottom --> scroll down
      * if e.touches[0].clientY increases in value then content is to be revealed from above - scroll up
      */
     const currentTouchY = e.changedTouches[0].clientY;
     setTestMessage('currentTouchY: ' + currentTouchY);
-    return;
     let msg = '';
 
     let newPlaceIndex;
     let scrollUp = false;
-    if (currentTouchY < lastTouchY && (lastTouchY - currentTouchY) > 10) {
+    if (currentTouchY > lastTouchY) {
       newPlaceIndex = currPlaceIndex + 1;
-      msg = 'scrolling down to index: ' + newPlaceIndex;
       scrollUp = false;
-    } else if (currentTouchY > lastTouchY && (currentTouchY - lastTouchY) > 10 && lastTouchY !== 0) {
+    } else if (currentTouchY < lastTouchY) {
       newPlaceIndex = currPlaceIndex - 1;
-      msg = 'scrolling up to index: ' + newPlaceIndex;
       scrollUp = true;
     }
     if (newPlaceIndex) {

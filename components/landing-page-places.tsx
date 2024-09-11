@@ -298,11 +298,11 @@ export default function Places() {
       w-screen h-screen 
       pt-20 sm:pt-[7.5625rem]%PLACES.length
       overflow-hidden
-      bg-white text-black' onTouchMove={(e) => {
+      bg-white text-black' onTouchEnd={(e) => {
         if (!lastTouchY) {
-          setLastTouchY(e.touches[0].clientY);
+          setLastTouchY(e.changedTouches[0].clientY);
         } else {
-          handleTouchMove(e);
+          // handleTouchMove(e);
         }
       }}
     >

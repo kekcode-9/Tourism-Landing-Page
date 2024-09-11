@@ -51,6 +51,7 @@ export default function Places() {
   const [currPlaceIndex, setCurrPlaceIndex] = useState<number>(0);
   const [deviceType, setDeviceType] = useState<'desktop' | 'mobile' | ''>('');
   const [scrollUp, isScrollUp] = useState<boolean | null>(null);
+  const [lastTouchY, setLastTouchY] = useState<number>(0);
 
   let debounceTimer: ReturnType<typeof setTimeout>;
 
@@ -128,6 +129,9 @@ export default function Places() {
       console.log('wheeling with deltaY: ', e.deltaY);
       handleWheelEvent(e);
     });
+    window.addEventListener('touchmove', (e) => {
+      setLastTouchY(e.touches[0].clientY)
+    })
 
     return () => {
       document.removeEventListener('keydown', keyDownHandler);
@@ -301,7 +305,7 @@ export default function Places() {
                 mt-[2rem] sm:my-20 `} data-index={i}
               >
                 <Typography isHeader size='text-[2rem] sm:text-2xl'>
-                  {name}
+                  {name} - {lastTouchY}
                 </Typography>
                 <Typography size='text-xs sm:text-base'>
                   {description}

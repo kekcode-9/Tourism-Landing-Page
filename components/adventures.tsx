@@ -192,7 +192,7 @@ export default function Adventures() {
                       w-full
                       pb-2'
                     >
-                      <Typography size='text-[14px] sm:text-base'>
+                      <Typography >
                         {adventure.name}
                       </Typography>
                     </div>
@@ -203,9 +203,11 @@ export default function Adventures() {
                     />
                     <div
                       className='adventure-description-text
-                      pt-4 text-xs sm:text-base'
+                      pt-4'
                     >
-                      {adventure.description}
+                      <Typography >
+                        {adventure.description}
+                      </Typography>
                     </div>
                   </>
                 )

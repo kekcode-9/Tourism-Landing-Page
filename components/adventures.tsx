@@ -205,7 +205,7 @@ export default function Adventures() {
                       className='adventure-description-text
                       pt-4'
                     >
-                      <Typography isHeader={false} size='text-sx sm:text-base'>
+                      <Typography isHeader={false} size='text-xs sm:text-base'>
                         {adventure.description}
                       </Typography>
                     </div>

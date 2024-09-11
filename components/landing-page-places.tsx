@@ -52,6 +52,7 @@ export default function Places() {
   const [deviceType, setDeviceType] = useState<'desktop' | 'mobile' | ''>('');
   const [scrollUp, isScrollUp] = useState<boolean | null>(null);
   const [lastTouchY, setLastTouchY] = useState<number>(0);
+  const [testMessage, setTestMessage] = useState<string>('');
 
   let debounceTimer: ReturnType<typeof setTimeout>;
 
@@ -267,6 +268,7 @@ export default function Places() {
       scrollUp = true;
     }
     if (newPlaceIndex) {
+      setTestMessage('newPlaceIndex: ' + newPlaceIndex + ' | calling scroller')
       if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
         newPlaceIndex > PLACES.length - 1 &&
         dispatch({
@@ -337,7 +339,7 @@ export default function Places() {
                 mt-[2rem] sm:my-20 `} data-index={i}
               >
                 <Typography isHeader size='text-[2rem] sm:text-2xl'>
-                  {name} - {lastTouchY} - {currPlaceIndex}
+                  {name} - {lastTouchY} - {testMessage}
                 </Typography>
                 <Typography size='text-xs sm:text-base'>
                   {description}

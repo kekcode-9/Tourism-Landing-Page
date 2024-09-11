@@ -99,7 +99,7 @@ export default function EntryLandingPage({
         relative 
         ${showPage ? 'flex' : 'hidden'}
         flex items-center justify-center
-        w-full h-full  
+        w-full h-screen  
       `}
     >
       <NameSVG />
@@ -140,7 +140,7 @@ export default function EntryLandingPage({
       {showGlimpseText && (
         <div
           className="down-arrow-container
-        absolute bottom-[4rem] left-0 right-0 m-auto
+        absolute bottom-[1rem] left-0 right-0 m-auto
         flex flex-col items-center gap-2
         cursor-pointer"
         onClick={() => {

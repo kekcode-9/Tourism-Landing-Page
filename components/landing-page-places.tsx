@@ -255,7 +255,6 @@ export default function Places() {
      */
     const currentTouchY = e.changedTouches[0].clientY;
     setTestMessage('currentTouchY: ' + currentTouchY);
-    setLastTouchY(currentTouchY);
     let msg = '';
 
     let newPlaceIndex;
@@ -299,7 +298,9 @@ export default function Places() {
       w-screen h-screen 
       pt-20 sm:pt-[7.5625rem]%PLACES.length
       overflow-hidden
-      bg-white text-black' onTouchEnd={handleTouchMove}
+      bg-white text-black' 
+      onTouchStart={(e) => setLastTouchY(e.touches[0].clientY)}
+      onTouchEnd={handleTouchMove}
     >
       {
         /**

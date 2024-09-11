@@ -9,10 +9,10 @@ import React, {
 import { CldImage } from 'next-cloudinary';
 import gsap from 'gsap';
 import { TourismContext } from '@/store/tourismStore';
-import ArrowThin from './svg-components/arrow-thin';
 import Typography from './common-components/typography';
 import constants from '@/utilities/constants';
 import { ACTIONS } from '@/store/actions';
+import Arrows from './common-components/arrows';
 
 const { PLACES } = constants;
 
@@ -331,30 +331,10 @@ export default function Places() {
           })
         }
       </div>
-      <div
-        className='arrows 
-        absolute z-30 bottom-[2rem] right-[2rem]
-        max-lg:flex flex-col lg:hidden gap-4'
-      >
-        <div
-          className='up-arrow w-full h-fit 
-          p-2
-          bg-columbia_blue 
-          cursor-pointer'
-          onClick={() => handleArrowIconClick(true)}
-        >
-          <ArrowThin/>
-        </div>
-        <div
-          className='down-arrow w-full h-fit 
-          p-2
-          bg-columbia_blue 
-          cursor-pointer'
-          onClick={() => handleArrowIconClick(false)}
-        >
-          <ArrowThin downwards={true} />
-        </div>
-      </div>
+      <Arrows 
+        onUpArrowClick={() => handleArrowIconClick(true)}
+        onDownArrowClick={() => {handleArrowIconClick(false)}}
+      />
       <div ref={imgWrapperRef}
         className='images-container
         absolute max-lg:top-[4.375rem] lg:bottom-0 left-0

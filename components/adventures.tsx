@@ -2,6 +2,7 @@ import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
 import { CldImage } from 'next-cloudinary';
 import gsap from 'gsap';
 import { TourismContext } from '@/store/tourismStore';
+import Arrows from './common-components/arrows';
 import { ACTIONS } from '@/store/actions';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import constants from '@/utilities/constants';
@@ -14,7 +15,6 @@ const { TOGGLE_SHOW_ADVENTURES, SET_PLACES_SCROLL_POS } = ACTIONS;
 
 export default function Adventures() {
   const [currAdventure, setCurrAdventure] = useState(0);
-  const [showContent, setShowContent] = useState(false);
 
   const { dispatch } = useContext(TourismContext);
 
@@ -32,23 +32,6 @@ export default function Adventures() {
   }
   
   useLayoutEffect(() => {
-    // const observer = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
-    //   entries.forEach((entry: IntersectionObserverEntry) => {
-    //     if (entry.isIntersecting) {
-    //       setShowContent(true);
-    //       entry.target.scrollIntoView({
-    //         behavior: 'smooth',
-    //         block: 'start'
-    //       })
-    //     }
-    //   })
-    // }, {
-    //   root: null,
-    //   threshold: 0.3
-    // });
-
-    // pageRef.current && observer.observe(pageRef.current);
-    
     let lastI = 0;
 
     let ctx = gsap.context(() => {
@@ -105,7 +88,7 @@ export default function Adventures() {
              */
             start: window && getScrollTriggerStart(),
             end: '140% 10%',
-            // markers: true,
+            markers: true,
             // scrub: (i && i<5) ? true : false,
             // onEnter onLeave onEnterBack onLeaveBack
             toggleActions: 'play reverse play reverse',

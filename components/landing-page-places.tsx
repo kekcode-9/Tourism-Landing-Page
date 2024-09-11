@@ -222,7 +222,7 @@ export default function Places() {
        * deltaY > 0 means a scroll down (more content is revealed from bottom)
        * deltaY < 0 means a scroll up (content is revealed from the top)
        * The scroll value of +-4 is used to get the extent of the scroll
-       */
+       */ 
       debounceTimer = setTimeout(() => {
         const newPlaceIndex = (e.deltaY > 4) ? (currPlaceIndex + 1) : (currPlaceIndex - 1);
         console.log(`newPlaceIndex: ${newPlaceIndex}`);

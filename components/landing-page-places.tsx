@@ -255,10 +255,10 @@ export default function Places() {
      */
     const currentTouchY = e.touches[0].clientY;
     setLastTouchY(currentTouchY);
-    if (lastTouchY === 0) {
-      setTestMessage('returning since lastTouchY is 0')
-      return;
-    }
+    // if (lastTouchY === 0) {
+    //   setTestMessage('returning since lastTouchY is 0')
+    //   return;
+    // }
     let newPlaceIndex;
     let scrollUp = false;
     if (currentTouchY < lastTouchY && (lastTouchY - currentTouchY) > 100) {
@@ -342,10 +342,11 @@ export default function Places() {
                 mt-[2rem] sm:my-20 `} data-index={i}
               >
                 <Typography isHeader size='text-[2rem] sm:text-2xl'>
-                  {name} - {lastTouchY} - {testMessage}
+                  {name} 
                 </Typography>
                 <Typography size='text-xs sm:text-base'>
-                  {description}
+                  {/* {description} */}
+                  {currPlaceIndex} - {lastTouchY} - {testMessage}
                 </Typography>
               </div>
             )

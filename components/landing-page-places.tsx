@@ -253,7 +253,8 @@ export default function Places() {
      * if e.touches[0].clientY reduces that means content is to be revealed from the bottom - scroll down
      * if e.touches[0].clientY increases in value then content is to be revealed from above - scroll up
      */
-    const currentTouchY = e.touches[0].clientY;
+    const currentTouchY = e.changedTouches[0].clientY;
+    setTestMessage('currentTouchY: ' + currentTouchY);
     setLastTouchY(currentTouchY);
     let msg = '';
 
@@ -302,7 +303,7 @@ export default function Places() {
         if (!lastTouchY) {
           setLastTouchY(e.changedTouches[0].clientY);
         } else {
-          // handleTouchMove(e);
+          handleTouchMove(e);
         }
       }}
     >

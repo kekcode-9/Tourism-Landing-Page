@@ -28,7 +28,7 @@ export default function EntryLandingPage({
   const overlayRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLDivElement>(null);
 
-  const { state, dispatch } = useContext(TourismContext);
+  const { dispatch } = useContext(TourismContext);
 
   const [showGlimpseText, toggleShowGlimpseText] = useState<boolean>(false);
 
@@ -89,6 +89,33 @@ export default function EntryLandingPage({
         duration: 1,
         ease: "power1.out",
       });
+    }
+
+    const handleWheelEvent = (e: WheelEvent) => {
+      if (e.deltaY > 0) {
+        // scrolling down
+        dispatch({
+          type: TOGGLE_SHOW_ENTRY,
+          payload: false
+        })
+      }
+    }
+
+    const handleKeyDownEvent = (e: KeyboardEvent) => {
+      if (e.code === "ArrowDown") {
+        dispatch({
+          type: TOGGLE_SHOW_ENTRY,
+          payload: false
+        })
+      }
+    }
+
+    window.addEventListener('wheel', handleWheelEvent);
+    window.addEventListener('keydown', handleKeyDownEvent);
+
+    return () => {
+      window.removeEventListener('wheel', handleWheelEvent);
+      window.removeEventListener('keydown', handleKeyDownEvent);
     }
   }, [imageRef, overlayRef]);
 

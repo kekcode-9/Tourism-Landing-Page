@@ -281,7 +281,6 @@ export default function Places() {
      * scroll on keydown
      */
     const keyDownHandler = (e: KeyboardEvent) => {
-      // console.log(`keydown detected on document with code: ${e.code} | repeat: ${e.repeat}`);
       if (e.code === "ArrowUp" || e.code === "ArrowDown") {
         handleArrowPress(e.code);
       }

@@ -1,15 +1,13 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import Link from "next/link";
 import constants from "@/utilities/constants";
 import Typography from "./typography";
 import CTA from "./cta";
 import BurgerMenu from "../svg-components/burger-menu";
-import { TourismContext } from "@/store/tourismStore";
 
 export default function Navbar() {
-  const { state, dispatch } = useContext(TourismContext);
-  const { showEntry } = state;
+  const navRef = useRef<HTMLDivElement>(null);
 
   const [showMenuOnMobile, setShowMenuOnMobile] = useState<boolean>(false);
 
@@ -48,10 +46,22 @@ export default function Navbar() {
         })
       }
     }
+
+    const handleWindowClick = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as HTMLElement)) {
+        setShowMenuOnMobile(false);
+      }
+    }
+
+    window.addEventListener('click', handleWindowClick);
+
+    return () => {
+      window.removeEventListener('click', handleWindowClick);
+    }
   }, [showMenuOnMobile, burgerMenuRef, menuItemsRef])
 
   return (
-    <div
+    <div ref={navRef}
       className="navbar-container
       fixed z-[100] top-0 left-0
       flex-col

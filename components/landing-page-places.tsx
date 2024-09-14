@@ -42,7 +42,7 @@ PLACES.map((place, i) => {
 
 export default function Places() {
   const { dispatch, state } = useContext(TourismContext);
-  const { placesScrollPos } = state;
+  const { placesScrollPos, showAdventures } = state;
 
   const imgWrapperRef = useRef<HTMLDivElement | null>(null);
   const imagesRefArr = useRef<(HTMLDivElement | null)[]>([]);
@@ -52,6 +52,9 @@ export default function Places() {
   const [currPlaceIndex, setCurrPlaceIndex] = useState<number>(0);
   const [deviceType, setDeviceType] = useState<'desktop' | 'mobile' | ''>('');
   const [scrollUp, isScrollUp] = useState<boolean | null>(null);
+
+  const [deltaYArr, updateDeltaYArr] = useState<number[]>([]);
+  const [readytoScroll, toggleReadyToScroll] = useState<boolean>(true);
 
   let debounceTimer: ReturnType<typeof setTimeout>;
 
@@ -114,31 +117,6 @@ export default function Places() {
     textRefArr.current
   ])
 
-  useEffect(() => {
-    /**
-     * scroll on keydown
-     */
-    const keyDownHandler = (e: KeyboardEvent) => {
-      // console.log(`keydown detected on document with code: ${e.code} | repeat: ${e.repeat}`);
-      if (e.code === "ArrowUp" || e.code === "ArrowDown") {
-        handleArrowPress(e.code);
-      }
-    }
-    document.addEventListener('keydown', keyDownHandler);
-    window.addEventListener('wheel', (e) => {
-      console.log('wheeling with deltaY: ', e.deltaY);
-      handleWheelEvent(e);
-    });
-    // window.addEventListener('touchmove', (e) => {
-    //   setLastTouchY(e.touches[0].clientY)
-    // })
-
-    return () => {
-      document.removeEventListener('keydown', keyDownHandler);
-      window.removeEventListener('wheel', handleWheelEvent);
-    }
-  }, [currPlaceIndex])
-
   useLayoutEffect(() => {
     if (textRefArr.current[currPlaceIndex] && scrollUp !== null) {
       const tl = gsap.timeline(); 
@@ -162,9 +140,10 @@ export default function Places() {
      */
     console.log(`placesScrollPos: dispatching with: ${currPlaceIndex ?(currPlaceIndex === placesText.length - 1 ? 'end' : 'middle') : 'start'}`)
     
-  }, [currPlaceIndex, scrollUp])
+  }, [scrollUp])
 
   const scroller = (newPlaceIndex: number, scrollUp: boolean) => {
+    console.log(`scroller: newPlaceIndex: ${newPlaceIndex} | scrollUp: ${scrollUp}`)
     // scroll image
     const nextImgPos = imagesRefArr.current[newPlaceIndex]?.offsetTop || 0;
     const nextImgHeight = imagesRefArr.current[newPlaceIndex]?.offsetHeight || 0;
@@ -190,14 +169,20 @@ export default function Places() {
       onComplete: () => {
         setCurrPlaceIndex(newPlaceIndex);
         isScrollUp(scrollUp);
+        setTimeout(() => {
+          toggleReadyToScroll(true);
+        }, 10)
+        const placePosition = newPlaceIndex ? (
+          newPlaceIndex >= placesText.length - 1 ?
+            'end' :
+            'middle'
+        ) : 'start';
+        
         dispatch({
           type: SET_PLACES_SCROLL_POS,
-          payload: newPlaceIndex ? (
-            newPlaceIndex === placesText.length - 1 ?
-              'end' :
-              'middle'
-          ) : 'start'
+          payload: placePosition
         })
+        
       }
     });
   }
@@ -205,68 +190,123 @@ export default function Places() {
   const handleArrowPress = useCallback((code: string) => {
     const scrollUp = code === 'ArrowUp';
     console.log(`handleArrowPress | currPlaceIndex: ${currPlaceIndex}`);
-    const newPlaceIndex = !scrollUp ? (currPlaceIndex + 1) : (currPlaceIndex - 1);
-    if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
-      newPlaceIndex > PLACES.length - 1 &&
+    let newPlaceIndex = currPlaceIndex;
+    if (scrollUp && currPlaceIndex) {
+      newPlaceIndex--;
+    } else if (!scrollUp && currPlaceIndex < PLACES.length - 1) {
+      newPlaceIndex++;
+    }
+    if (newPlaceIndex !== currPlaceIndex) {
+      scroller(newPlaceIndex, scrollUp);
+    } else if (newPlaceIndex === PLACES.length - 1) {
       dispatch({
         type: TOGGLE_SHOW_ADVENTURES,
         payload: true
-      });
-      return;
+      })
     }
-    scroller(newPlaceIndex, scrollUp);
   }, [currPlaceIndex])
 
-  const handleWheelEvent = useCallback((e: WheelEvent) => {
+  const handleWheelEvent = useCallback((e: WheelEvent) => {// React.WheelEvent<HTMLDivElement>
     e.preventDefault();
-    if (debounceTimer) {
-      console.log(`debounced`);
-      clearTimeout(debounceTimer);
-    }
+    console.log('test | handleWheelEvent called');
 
-    const scrollUp = e.deltaY < 0;
+    if (!deltaYArr.length) {
+      console.log('test | new session')
+      updateDeltaYArr([e.deltaY]);
+    } else {
+      let latestScrollArr = [...deltaYArr];
+      const firstDeltaY = latestScrollArr[0];
+      const lastDeltaY = e.deltaY;
+      const sameDir = (firstDeltaY * lastDeltaY) > 0; // check if both deltaY have the same sign
 
-    if (e.deltaY > 0 || e.deltaY < 0) {
-      /**
-       * deltaY > 0 means a scroll down (more content is revealed from bottom)
-       * deltaY < 0 means a scroll up (content is revealed from the top)
-       * The scroll value of +-4 is used to get the extent of the scroll
-       */ 
-      debounceTimer = setTimeout(() => {
-        const newPlaceIndex = (e.deltaY > 4) ? (currPlaceIndex + 1) : (currPlaceIndex - 1);
-        if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
-          newPlaceIndex > PLACES.length - 1 &&
+      if (sameDir && Math.abs(firstDeltaY - lastDeltaY) >= 30) {
+        // if the deltaY are both in same direction and their difference crosses the threshold
+        const scrollUp = lastDeltaY < 0;
+        let newPlaceIndex = currPlaceIndex;
+        console.log(`currPlaceIndex: ${currPlaceIndex} | scrollUp: ${scrollUp}`);
+        if (scrollUp && currPlaceIndex) {
+          // if scrolling up true and there is anything to show up there
+          newPlaceIndex--;
+        } else if (!scrollUp && currPlaceIndex < (PLACES.length - 1)) {
+          // if scrolling down and there is anything to show down there
+          newPlaceIndex++;
+        }
+        if (newPlaceIndex !== currPlaceIndex) {
+          toggleReadyToScroll(false);
+          scroller(newPlaceIndex, scrollUp);
+          console.log(`test | update newPlaceIndex to ${newPlaceIndex} while curr is ${currPlaceIndex} | firstDeltaY: ${firstDeltaY} and lastDeltaY: ${lastDeltaY}`)
+          setCurrPlaceIndex(newPlaceIndex);
+        } else if (currPlaceIndex === PLACES.length - 1) {
           dispatch({
             type: TOGGLE_SHOW_ADVENTURES,
             payload: true
-          });
-            return;
-          }
-        scroller(newPlaceIndex, scrollUp);
-      }, 200)
+          })
+        }
+
+        // reset after a scroll completion
+        latestScrollArr = [];
+      } else if (!sameDir) {
+        console.log('test | not sameDir. resetting');
+        // if the first and last deltaY are in opposite directions then reset
+        latestScrollArr = [];
+      }
+
+      updateDeltaYArr(latestScrollArr);
     }
-  }, [currPlaceIndex, imagesRefArr, textRefArr, imgWrapperRef])
+
+  }, [currPlaceIndex, deltaYArr])
 
   const handleArrowIconClick = useCallback((up: boolean) => {
-    const newPlaceIndex = up ? currPlaceIndex - 1 : currPlaceIndex + 1;
-    if (newPlaceIndex > PLACES.length - 1 || newPlaceIndex < 0) {
-      newPlaceIndex > PLACES.length - 1 &&
+    let newPlaceIndex = currPlaceIndex;
+    if (up && currPlaceIndex) {
+      newPlaceIndex--;
+    } else if (!up && currPlaceIndex < PLACES.length - 1) {
+      newPlaceIndex++;
+    }
+
+    if (newPlaceIndex !== currPlaceIndex) {
+      scroller(newPlaceIndex, up);
+    } else if (currPlaceIndex === PLACES.length - 1) {
       dispatch({
         type: TOGGLE_SHOW_ADVENTURES,
         payload: true
-      });
-        return;
-      }
-    scroller(newPlaceIndex, up);
+      })
+    }
+
   }, [currPlaceIndex])
 
-  /**
-   * At 100% zoom level:
-   * window.devicePixelRatio :
-   * for desktop : 1
-   * for tablets : 2
-   * for mobiles : 3
-   */
+  // effects
+  useEffect(() => {
+    /**
+     * scroll on keydown
+     */
+    const keyDownHandler = (e: KeyboardEvent) => {
+      // console.log(`keydown detected on document with code: ${e.code} | repeat: ${e.repeat}`);
+      if (e.code === "ArrowUp" || e.code === "ArrowDown") {
+        handleArrowPress(e.code);
+      }
+    }
+    const debouncedWheelEvent = (e: WheelEvent) => {
+      if (readytoScroll) {
+        handleWheelEvent(e);
+      }
+    }
+
+    document.addEventListener('keydown', keyDownHandler);
+    window.addEventListener('wheel', debouncedWheelEvent);
+
+    return () => {
+      document.removeEventListener('keydown', keyDownHandler);
+      window.removeEventListener('wheel', debouncedWheelEvent);
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+    }
+  }, [handleWheelEvent, readytoScroll])
+
+  if (showAdventures) {
+    return
+  }
 
   return (
     <div
@@ -289,7 +329,7 @@ export default function Places() {
         relative z-20
         flex flex-col items-center justify-start 
         w-screen  
-        h-[51dvh]
+        h-[51dvh] lg:h-[40vh]
         lg:pt-20
         ${ 
           deviceType === 'desktop' ? 

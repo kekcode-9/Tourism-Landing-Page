@@ -1,4 +1,5 @@
 import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
+import { useInView } from 'react-intersection-observer';
 import { CldImage } from 'next-cloudinary';
 import gsap from 'gsap';
 import { TourismContext } from '@/store/tourismStore';
@@ -17,11 +18,16 @@ const { TOGGLE_SHOW_ADVENTURES, SET_PLACES_SCROLL_POS } = ACTIONS;
 export default function Adventures() {
   const [currAdventure, setCurrAdventure] = useState(0);
 
-  const { dispatch } = useContext(TourismContext);
+  const { dispatch, state } = useContext(TourismContext);
+  const { showAdventures } = state;
 
   const adventuresRef = useRef<HTMLDivElement>(null);
   const imgRefsArr = useRef<(HTMLDivElement | null)[]>([]);
   const pageRef = useRef<HTMLDivElement>(null);
+
+  const {ref: topRef, inView: topInView} = useInView({
+    threshold: 1
+  })
 
   const getScrollTriggerStart = () => {
     const width = window.innerWidth;
@@ -68,7 +74,7 @@ export default function Adventures() {
              * move with that element even if position: fixed is applied! Weird, I know. 
              * Technically it's proper behavior but almost nobody thinks that's intuitive 
              */
-            pinType: 'fixed',
+            // pinType: 'fixed',
             pinSpacing: true,
             anticipatePin: 1,
             /**
@@ -126,6 +132,10 @@ export default function Adventures() {
     }
   }, [])
 
+  if (!showAdventures) {
+    return
+  }
+
   return (
     <div className='relative 
     w-screen h-[100dvh] 
@@ -141,18 +151,15 @@ export default function Adventures() {
         bg-white
         overflow-scroll'
         onWheel={(e) => {
-          if (!currAdventure && e.deltaY < 0) {
+          if (!currAdventure && e.deltaY < 0 && topInView) {
             dispatch({
               type: TOGGLE_SHOW_ADVENTURES,
               payload: false
-            });
-            dispatch({
-              type: SET_PLACES_SCROLL_POS,
-              payload: 'end'
             })
           }
         }}
       >
+        <div className='top-span w-1 h-1 bg-dark_slate_gray' ref={topRef} />
         {
           ADVENTURES.map((adv, i) => {
             const {name, image} = adv;
@@ -202,7 +209,7 @@ export default function Adventures() {
                       pb-2'
                     >
                       <Typography >
-                        {adventure.name}
+                        {adventure.name} - {topInView ? 'top showing' : 'top not showing'}
                       </Typography>
                     </div>
                     <div

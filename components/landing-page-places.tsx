@@ -355,7 +355,7 @@ export default function Places() {
             return (
               <div key={i} ref={(ele) => textRefArr.current[i] = ele}
                 className={`text-wrapper
-                flex flex-col items-center gap-6
+                flex flex-col items-start lg:items-center gap-6
                 w-screen sm:w-[70vw] xl:w-[50vw]
                 max-sm:px-4
                 sm:my-20 

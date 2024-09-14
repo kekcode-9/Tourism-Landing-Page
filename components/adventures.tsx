@@ -13,7 +13,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const { ADVENTURES } = constants;
 
-const { TOGGLE_SHOW_ADVENTURES, SET_PLACES_SCROLL_POS } = ACTIONS;
+const { TOGGLE_SHOW_ADVENTURES } = ACTIONS;
 
 export default function Adventures() {
   const [currAdventure, setCurrAdventure] = useState(0);
@@ -32,7 +32,7 @@ export default function Adventures() {
   const getScrollTriggerStart = () => {
     const width = window.innerWidth;
     if (width < 1536 && width > 1024) {
-      return '100% bottom';
+      return '98% bottom';
     } else {
       return '50% 40%';
     }
@@ -103,7 +103,7 @@ export default function Adventures() {
              */
             start: window && getScrollTriggerStart(),
             end: window && getScrollTriggerEnd(), // '140% 10%',
-            markers: true,
+            // markers: true,
             // scrub: (i && i<5) ? true : false,
             // onEnter onLeave onEnterBack onLeaveBack
             toggleActions: 'play reverse play reverse',
@@ -143,6 +143,20 @@ export default function Adventures() {
     bg-[#ffffff]'
     ref={pageRef}
     >
+      {
+        !currAdventure ?
+        <Arrows 
+          onUpArrowClick={() => {
+            dispatch({
+              type: TOGGLE_SHOW_ADVENTURES,
+              payload: false
+            })
+          }}
+          inset='bottom-[6%] right-[1rem]'
+          onDownArrowClick={() => {}}
+          showDownArrow={false}
+        /> : <></>
+        }
       <div  ref={adventuresRef}
         className='landing-page-adventures flex flex-col gap-4 
         items-center lg:max-2xl:items-start 2xl:items-center

@@ -291,7 +291,7 @@ export default function Places() {
         relative
         flex flex-col items-center justify-end lg:justify-start
         w-screen h-[100dvh] 
-        overflow-hidden
+        overflow-hidden 
         bg-white text-black' 
       >
         {

@@ -199,6 +199,7 @@ export default function Adventures() {
                   fill
                   quality={100}
                   className='max-lg:rounded-lg 2xl:rounded-lg '
+                  loading='lazy'
                 />
               </div>
             )
@@ -223,7 +224,7 @@ export default function Adventures() {
                       pb-2'
                     >
                       <Typography >
-                        {adventure.name} - {topInView ? 'top showing' : 'top not showing'}
+                        {adventure.name}
                       </Typography>
                     </div>
                     <div

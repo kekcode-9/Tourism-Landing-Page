@@ -67,7 +67,7 @@ export default function Places() {
     setDeviceType(width > height ? 'desktop' : 'mobile');
 
     /**
-     * show the 0th place after a remount
+     * show the right image after a remount
      */
     const index = placesScrollPos === 'end' ? placesText.length - 1 : 0;
     setCurrPlaceIndex(index); // when currPlaceIndex is updated, the useEffect depending on it will show the text animation
@@ -79,43 +79,20 @@ export default function Places() {
         behavior: 'smooth'
       });
     }
+    if (textRefArr.current[index]) {
+      const tl = gsap.timeline(); 
 
-    /**
-     * intersection observer for detecting a paragraph's entry into view
-     * and adding animation to the transition
-     */
-    const observerOptions = {
-      root: textContainerRef.current,
-      rootMargin: '0px',
-      threshold: 0.5, // Adjust threshold as needed
-    };
-
-    const observer = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry: IntersectionObserverEntry) => {
-        const index: number = Number(entry.target.getAttribute('data-index'));
-        if (entry.isIntersecting) {
-          console.log(`index ${index} just scrolled into view`);
-          gsap.to(textRefArr.current[index], {
-            opacity: 1,
-            translateY: 0,
-            delay: 0.3,
-            duration: 0.5
-          });
-        } else {
-          console.log(`index: ${index} is out of view`);
-        }
+      tl.set(textRefArr.current[index], {
+        opacity: 0,
+        translateY: '9rem'
+      }).to(textRefArr.current[index], {
+        opacity: 1,
+        translateY: 0,
+        duration: 0.5
       })
-    });
-
-    // textRefArr.current?.forEach((textRef: HTMLDivElement | null) => {
-    //   textRef && observer.observe(textRef);
-    // })
+    }
     
-  }, [
-    imgWrapperRef.current, 
-    textContainerRef.current, 
-    textRefArr.current
-  ])
+  }, [imgWrapperRef.current, textRefArr])
 
   useLayoutEffect(() => {
     if (textRefArr.current[currPlaceIndex] && scrollUp !== null) {
@@ -135,10 +112,6 @@ export default function Places() {
         duration: 0.5
       })
     }
-    /**
-     * set placesScrollPos
-     */
-    console.log(`placesScrollPos: dispatching with: ${currPlaceIndex ?(currPlaceIndex === placesText.length - 1 ? 'end' : 'middle') : 'start'}`)
     
   }, [scrollUp])
 
@@ -162,6 +135,7 @@ export default function Places() {
     let lastIndex = scrollUp ? newPlaceIndex + 1 : newPlaceIndex - 1;
 
     const tl = gsap.timeline();
+    // exit animation for text from the last displayed place
     tl.to(textRefArr.current[lastIndex], {
       translateY: scrollUp ? '9rem' : '-9rem',
       opacity: 0,
@@ -310,106 +284,111 @@ export default function Places() {
   return (
     <div
       className='landing-page-places-content-div
-      relative
-      flex flex-col items-center justify-end lg:justify-start
-      w-screen h-[100dvh] 
-      overflow-hidden
-      bg-white text-black' 
+      relative' onWheel={() => {alert('wheeling')}}
     >
-      {
-        /**
-         * in desktop we want to make the text take up the entire screen when devicePixelRation >= 1.5
-         * in mobile we do not want to make changes based on device pixel ratio
-         * ${window.devicePixelRatio < 1.5 ? 'z-20' : 'z-0 sm:z-20'}
-         */
-      }
-      <div ref={textContainerRef}
-        className={`texts-container
-        relative z-20
-        flex flex-col items-center justify-start 
-        w-screen  
-        h-[51dvh] lg:h-[40vh]
-        lg:pt-20
-        ${ 
-          deviceType === 'desktop' ? 
-          (window.devicePixelRatio < 1.3 ? 'sm:h-[30dvh]' : 'sm:h-screen') : 
-          'sm:h-[30dvh]'
-        }
-        
-        overflow-scroll text-center 
-        text-dark_slate_gray
-        bg-white 
-        shadow-[-1px_-41px_102px_25px_rgba(255,255,255,1)] 
-        lg:shadow-[0px_72px_77px_51px_rgba(255,255,255,1)] 
-        max-lg:mb-[3rem]
-        pointer-events-none`}
+      <div
+        className='landing-page-places-content-div
+        relative
+        flex flex-col items-center justify-end lg:justify-start
+        w-screen h-[100dvh] 
+        overflow-hidden
+        bg-white text-black' 
       >
         {
-          placesText.map((texts, i) => {
-            const {name, description} = texts;
-            // opacity-0 translate-y-36
-            if (i !== currPlaceIndex) {
-              return <></>;
-            }
-            return (
-              <div key={i} ref={(ele) => textRefArr.current[i] = ele}
-                className={`text-wrapper
-                flex flex-col items-start lg:items-center gap-6
-                w-screen sm:w-[70vw] xl:w-[50vw]
-                max-sm:px-4
-                sm:my-20 
-                max-lg:text-left`} data-index={i}
-              >
-                <Typography isHeader size='text-[2rem] sm:text-2xl'>
-                  {name} 
-                </Typography>
-                <Typography size='text-xs sm:text-base'>
-                  {description}
-                </Typography>
-              </div>
-            )
-          })
+          /**
+           * in desktop we want to make the text take up the entire screen when devicePixelRation >= 1.5
+           * in mobile we do not want to make changes based on device pixel ratio
+           * ${window.devicePixelRatio < 1.5 ? 'z-20' : 'z-0 sm:z-20'}
+           */
         }
-      </div>
-      <Arrows 
-        onUpArrowClick={() => handleArrowIconClick(true)}
-        onDownArrowClick={() => {handleArrowIconClick(false)}}
-      />
-      <div ref={imgWrapperRef}
-        className='images-container
-        absolute max-lg:top-[4.375rem] lg:bottom-0 left-0
-        flex flex-col
-        w-screen 
-        h-[28dvh] sm:h-[80dvh]
-        overflow-scroll 
-        pointer-events-none'
-      >
-        {
-          placesImages.map((image, i) => {
-            return (
-              <div ref={(ele) => imagesRefArr.current[i] = ele}
-                className='mask-outer
-                relative
-                w-full h-full' data-index={i} key={i}
-              >
-                <div
-                  className='mask-inner
-                  relative
-                  w-full
-                  h-[28dvh] sm:h-[80dvh]'
+        <div ref={textContainerRef}
+          className={`texts-container
+          relative z-20
+          flex flex-col items-center justify-start 
+          w-screen  
+          h-[51dvh] lg:h-[40vh]
+          lg:pt-20
+          ${ 
+            deviceType === 'desktop' ? 
+            (window.devicePixelRatio < 1.3 ? 'sm:h-[30dvh]' : 'sm:h-screen') : 
+            'sm:h-[30dvh]'
+          }
+          
+          overflow-scroll text-center 
+          text-dark_slate_gray
+          bg-white 
+          shadow-[-1px_-41px_102px_25px_rgba(255,255,255,1)] 
+          lg:shadow-[0px_72px_77px_51px_rgba(255,255,255,1)] 
+          max-lg:mb-[3rem]
+          pointer-events-none`}
+        >
+          {
+            placesText.map((texts, i) => {
+              const {name, description} = texts;
+              if (i !== currPlaceIndex) {
+                return <></>;
+              }
+              return (
+                <div key={i} ref={(ele) => textRefArr.current[i] = ele}
+                  className={`text-wrapper
+                  flex flex-col items-start lg:items-center gap-6
+                  w-screen sm:w-[70vw] xl:w-[50vw]
+                  max-sm:px-4
+                  ${window.innerHeight >= 800 ? 'sm:my-20' : 'sm:my-9'}
+                  max-lg:text-left`} data-index={i}
                 >
-                  <CldImage
-                    src={image}
-                    alt={''}
-                    fill
-                    className='place-image 
-                    object-cover'
-                  />
+                  <Typography isHeader size='text-[2rem] sm:text-2xl'>
+                    {name} 
+                  </Typography>
+                  <Typography size='text-xs sm:text-base'>
+                    {description}
+                  </Typography>
                 </div>
-              </div>
-            )
-          })
-        }
+              )
+            })
+          }
+        </div>
+        <Arrows 
+          onUpArrowClick={() => handleArrowIconClick(true)}
+          onDownArrowClick={() => {handleArrowIconClick(false)}}
+        />
+        <div ref={imgWrapperRef}
+          className='images-container
+          absolute max-lg:top-[4.375rem] lg:bottom-0 left-0
+          flex flex-col
+          w-screen 
+          h-[28dvh] sm:h-[80dvh]
+          overflow-scroll 
+          pointer-events-none'
+        >
+          {
+            placesImages.map((image, i) => {
+              return (
+                <div ref={(ele) => imagesRefArr.current[i] = ele}
+                  className='mask-outer
+                  relative
+                  w-full h-full' data-index={i} key={i}
+                >
+                  <div
+                    className='mask-inner
+                    relative
+                    w-full
+                    h-[28dvh] sm:h-[80dvh]'
+                  >
+                    <CldImage
+                      src={image}
+                      alt={''}
+                      fill
+                      loading='lazy'
+                      className='place-image 
+                      object-cover'
+                    />
+                  </div>
+                </div>
+              )
+            })
+          }
+        </div>
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import React, { useContext, useLayoutEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { CldImage } from 'next-cloudinary';
 import gsap from 'gsap';
@@ -8,6 +9,7 @@ import { ACTIONS } from '@/store/actions';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import constants from '@/utilities/constants';
 import Typography from './common-components/typography';
+import { getLines } from '@/utilities/utility-functions';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -74,7 +76,7 @@ export default function Adventures() {
              * move with that element even if position: fixed is applied! Weird, I know. 
              * Technically it's proper behavior but almost nobody thinks that's intuitive 
              */
-            // pinType: 'fixed',
+            pinType: 'fixed',
             pinSpacing: true,
             anticipatePin: 1,
             /**
@@ -207,41 +209,112 @@ export default function Adventures() {
         <div 
           className='fixed right-0 max-lg:top-[60%] top-[45%] 
           w-full lg:max-2xl:w-[600px] 2xl:w-[800px]
+          h-[40dvh]
           max-lg:p-[1rem] lg:pr-[160px] 2xl:pr-[240px] 
           mt-12
-          text-dark_slate_gray 
+          text-dark_slate_gray bg-white
           pointer-events-none
         '>
           {
             ADVENTURES.map((adventure, i) => {
-              if (i === currAdventure) {
-                return (
-                  <>
-                    <div
-                      className='adventure-name-text
-                      w-full
-                      pb-2'
-                    >
-                      <Typography >
-                        {adventure.name} - {topInView ? 'top showing' : 'top not showing'}
-                      </Typography>
-                    </div>
-                    <div
-                      className='adventure-text-divider
-                      w-full h-[1px] 
-                      bg-dark_slate_gray'
-                    />
-                    <div
-                      className='adventure-description-text
-                      pt-4'
-                    >
-                      <Typography >
-                        {adventure.description}
-                      </Typography>
-                    </div>
-                  </>
-                )
-              }
+              const { description } = adventure;
+                
+              return (
+                <>
+                  <AnimatePresence>
+                    { i === currAdventure &&
+                      <motion.div
+                        className='adventure-name-text
+                        w-full
+                        pb-2'
+                        key={adventure.name}
+                        initial={{
+                          scaleY: 0
+                        }}
+                        animate={{
+                          scaleY: 1,
+                          transformOrigin: 'bottom',
+                          transition: {
+                            delay: !i ? 0.5 : 1,
+                            duration: 0.5
+                          }
+                        }}
+                        exit={{
+                          scaleY: 0,
+                          transformOrigin: 'top',
+                          transition: {
+                            duration: 0.5
+                          }
+                        }}
+                      >
+                        <Typography >
+                          {adventure.name}
+                        </Typography>
+                      </motion.div>
+                    }
+                  </AnimatePresence>
+                  <AnimatePresence>
+                    {
+                      i === currAdventure &&
+                      <motion.div
+                        className='adventure-text-divider
+                        w-full h-[1px] 
+                        bg-dark_slate_gray'
+                        key={adventure.name}
+                        initial={{
+                          scaleX: 0,
+                        }}
+                        animate={{
+                          scaleX: 1,
+                          transformOrigin: 'left',
+                          transition: {
+                            delay: !i ? 0.3 : 0.8,
+                            duration: 0.5
+                          }
+                        }}
+                        exit={{
+                          scaleX: 0,
+                          transformOrigin: 'right',
+                          transition: {
+                            duration: 0.5
+                          }
+                        }}
+                      />
+                    }
+                  </AnimatePresence>
+                  <AnimatePresence>
+                    { i === currAdventure &&
+                      <motion.div
+                        className='adventure-description-text
+                        pt-4'
+                        key={adventure.name}
+                        initial={{
+                          scaleY: 0
+                        }}
+                        animate={{
+                          scaleY: 1,
+                          transformOrigin: 'top',
+                          transition: {
+                            delay: !i ? 0.5 : 1,
+                            duration: 0.5
+                          }
+                        }}
+                        exit={{
+                          scaleY: 0,
+                          transformOrigin: 'bottom',
+                          transition: {
+                            duration: 0.5
+                          }
+                        }}
+                      >
+                        <Typography >
+                          {adventure.description}
+                        </Typography>
+                      </motion.div>
+                    }
+                  </AnimatePresence>
+                </>
+              )
             })
           }
         </div>

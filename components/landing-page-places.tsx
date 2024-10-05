@@ -7,6 +7,7 @@ import React, {
   useLayoutEffect 
 } from 'react';
 import { CldImage } from 'next-cloudinary';
+import { AnimatePresence, motion } from 'framer-motion';
 import gsap from 'gsap';
 import { TourismContext } from '@/store/tourismStore';
 import Typography from './common-components/typography';
@@ -47,7 +48,6 @@ export default function Places() {
   const imgWrapperRef = useRef<HTMLDivElement | null>(null);
   const imagesRefArr = useRef<(HTMLDivElement | null)[]>([]);
   const textContainerRef = useRef<HTMLDivElement | null>(null);
-  const textRefArr = useRef<(HTMLDivElement | null)[]>([]);
 
   const [currPlaceIndex, setCurrPlaceIndex] = useState<number>(0);
   const [deviceType, setDeviceType] = useState<'desktop' | 'mobile' | ''>('');
@@ -67,7 +67,7 @@ export default function Places() {
     setDeviceType(width > height ? 'desktop' : 'mobile');
 
     /**
-     * show the 0th place after a remount
+     * show the right image after a remount
      */
     const index = placesScrollPos === 'end' ? placesText.length - 1 : 0;
     setCurrPlaceIndex(index); // when currPlaceIndex is updated, the useEffect depending on it will show the text animation
@@ -79,68 +79,8 @@ export default function Places() {
         behavior: 'smooth'
       });
     }
-
-    /**
-     * intersection observer for detecting a paragraph's entry into view
-     * and adding animation to the transition
-     */
-    const observerOptions = {
-      root: textContainerRef.current,
-      rootMargin: '0px',
-      threshold: 0.5, // Adjust threshold as needed
-    };
-
-    const observer = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
-      entries.forEach((entry: IntersectionObserverEntry) => {
-        const index: number = Number(entry.target.getAttribute('data-index'));
-        if (entry.isIntersecting) {
-          console.log(`index ${index} just scrolled into view`);
-          gsap.to(textRefArr.current[index], {
-            opacity: 1,
-            translateY: 0,
-            delay: 0.3,
-            duration: 0.5
-          });
-        } else {
-          console.log(`index: ${index} is out of view`);
-        }
-      })
-    });
-
-    // textRefArr.current?.forEach((textRef: HTMLDivElement | null) => {
-    //   textRef && observer.observe(textRef);
-    // })
     
-  }, [
-    imgWrapperRef.current, 
-    textContainerRef.current, 
-    textRefArr.current
-  ])
-
-  useLayoutEffect(() => {
-    if (textRefArr.current[currPlaceIndex] && scrollUp !== null) {
-      const tl = gsap.timeline(); 
-      /**
-       * during the set animation, we translate the div's translateY 9rem up or down based on whether the
-       * scroll direction is up or down respectively.
-       * That way, when the to animation sets the translateY back to 0 it will look like the div is
-       * sliding in from top ( for a scroll up ) or sliding up from below ( for a scroll down )
-       */
-      tl.set(textRefArr.current[currPlaceIndex], {
-        opacity: 0,
-        translateY: scrollUp ? '-9rem' : '9rem'
-      }).to(textRefArr.current[currPlaceIndex], {
-        opacity: 1,
-        translateY: 0,
-        duration: 0.5
-      })
-    }
-    /**
-     * set placesScrollPos
-     */
-    console.log(`placesScrollPos: dispatching with: ${currPlaceIndex ?(currPlaceIndex === placesText.length - 1 ? 'end' : 'middle') : 'start'}`)
-    
-  }, [scrollUp])
+  }, [imgWrapperRef.current])
 
   const scroller = (newPlaceIndex: number, scrollUp: boolean) => {
     console.log(`scroller: newPlaceIndex: ${newPlaceIndex} | scrollUp: ${scrollUp}`)
@@ -159,32 +99,23 @@ export default function Places() {
     });
 
     // scroll text
-    let lastIndex = scrollUp ? newPlaceIndex + 1 : newPlaceIndex - 1;
+    // exit animation for text from the last displayed place
+    isScrollUp(scrollUp);
+    setCurrPlaceIndex(newPlaceIndex);
+    setTimeout(() => {
+      toggleReadyToScroll(true);
+    }, 20)
+    const placePosition = newPlaceIndex ? (
+      newPlaceIndex >= placesText.length - 1 ?
+        'end' :
+        'middle'
+    ) : 'start';
+    
+    dispatch({
+      type: SET_PLACES_SCROLL_POS,
+      payload: placePosition
+    })
 
-    const tl = gsap.timeline();
-    tl.to(textRefArr.current[lastIndex], {
-      translateY: scrollUp ? '9rem' : '-9rem',
-      opacity: 0,
-      duration: 0.5,
-      onComplete: () => {
-        setCurrPlaceIndex(newPlaceIndex);
-        isScrollUp(scrollUp);
-        setTimeout(() => {
-          toggleReadyToScroll(true);
-        }, 10)
-        const placePosition = newPlaceIndex ? (
-          newPlaceIndex >= placesText.length - 1 ?
-            'end' :
-            'middle'
-        ) : 'start';
-        
-        dispatch({
-          type: SET_PLACES_SCROLL_POS,
-          payload: placePosition
-        })
-        
-      }
-    });
   }
 
   const handleArrowPress = useCallback((code: string) => {
@@ -347,26 +278,42 @@ export default function Places() {
         {
           placesText.map((texts, i) => {
             const {name, description} = texts;
-            // opacity-0 translate-y-36
-            if (i !== currPlaceIndex) {
-              return <></>;
-            }
             return (
-              <div key={i} ref={(ele) => textRefArr.current[i] = ele}
-                className={`text-wrapper
-                flex flex-col items-start lg:items-center gap-6
-                w-screen sm:w-[70vw] xl:w-[50vw]
-                max-sm:px-4
-                sm:my-20 
-                max-lg:text-left`} data-index={i}
-              >
-                <Typography isHeader size='text-[2rem] sm:text-2xl'>
-                  {name} 
-                </Typography>
-                <Typography size='text-xs sm:text-base'>
-                  {description}
-                </Typography>
-              </div>
+              <AnimatePresence>
+                { i === currPlaceIndex &&
+                  <motion.div key={name.replace(' ', '_')}
+                    className={`text-wrapper
+                    flex flex-col items-start lg:items-center gap-6
+                    w-screen sm:w-[70vw] xl:w-[50vw]
+                    max-sm:px-4
+                    ${window.innerHeight >= 800 ? 'sm:my-20' : 'sm:my-9'}
+                    max-lg:text-left`} data-index={i}
+                    initial={{
+                      opacity: 0,
+                      translateY: scrollUp ? '-9rem' : '9rem'
+                    }}
+                    animate={{
+                      opacity: 1,
+                      translateY: 0,
+                      transition: {
+                        delay: 0.5,
+                        duration: 0.3
+                      }
+                    }}
+                    exit={{
+                      // translateY: scrollUp ? '9rem' : '-9rem',
+                      opacity: 0
+                    }}
+                  >
+                    <Typography isHeader size='text-[2rem] sm:text-2xl'>
+                      {name}
+                    </Typography>
+                    <Typography size='text-xs sm:text-base'>
+                      {description}
+                    </Typography>
+                  </motion.div>
+                }
+              </AnimatePresence>
             )
           })
         }
@@ -402,6 +349,7 @@ export default function Places() {
                     src={image}
                     alt={''}
                     fill
+                    loading='lazy'
                     className='place-image 
                     object-cover'
                   />

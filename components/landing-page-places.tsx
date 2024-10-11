@@ -278,7 +278,9 @@ export default function Places() {
       relative
       flex flex-col items-center justify-end lg:justify-start
       w-screen h-[100dvh] 
-      bg-white text-black" onScroll={() => alert('scrolling')}
+      bg-white text-black" onScroll={() => {
+        alert('scrolling');
+      }}
     >
       {/* <div ref={topRef}
         className="top-div absolute top-[-4px] z-50

@@ -109,7 +109,7 @@ export default function Navbar() {
               )}
             </div>
             <CTA smallButton label={constants.PLAN_TRIP} onClick={() => {
-              toggleShowPopup(!showPopup)
+              toggleShowPopup(!showPopup) 
             }} />
           </div>
         </div>

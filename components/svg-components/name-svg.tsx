@@ -70,8 +70,8 @@ export default function NameSVG() {
   //       ref={pathRef}
   //       d="M7 244H1906"
   //       stroke="white"
-  //       stroke-width="2"
-  //       stroke-linecap="round"
+  //       strokeWidth="2"
+  //       strokeLinecap="round"
   //       className="opacity-0 will-change-auto"
   //     />
   //     <g
@@ -92,9 +92,9 @@ export default function NameSVG() {
   //         width="1908.22"
   //         height="325.117"
   //         filterUnits="userSpaceOnUse"
-  //         color-interpolation-filters="sRGB"
+  //         colorInterpolationFilters="sRGB"
   //       >
-  //         <feFlood flood-opacity="0" result="BackgroundImageFix" />
+  //         <feFlood floodOpacity="0" result="BackgroundImageFix" />
   //         <feGaussianBlur in="BackgroundImageFix" stdDeviation="2" />
   //         <feComposite
   //           in2="SourceAlpha"
@@ -116,8 +116,8 @@ export default function NameSVG() {
   //         y2="-50.8256"
   //         gradientUnits="userSpaceOnUse"
   //       >
-  //         <stop stop-color="white" />
-  //         <stop offset="1" stop-color="#ADCDD5" stop-opacity="0.19" />
+  //         <stop stopColor="white" />
+  //         <stop offset="1" stopColor="#ADCDD5" stopOpacity="0.19" />
   //       </linearGradient>
   //     </defs>
   //   </svg>
@@ -137,8 +137,8 @@ export default function NameSVG() {
       <motion.path
         ref={pathRef}
         stroke="#fff"
-        stroke-linecap="round"
-        stroke-width="2"
+        strokeLinecap="round"
+        strokeWidth="2"
         d="M7 244h1899"
         className="opacity-0 will-change-auto"
       />
@@ -160,8 +160,8 @@ export default function NameSVG() {
           y2="-50.826"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#fff" />
-          <stop offset="1" stop-color="#ADCDD5" stop-opacity=".19" />
+          <stop stopColor="#fff" />
+          <stop offset="1" stopColor="#ADCDD5" stopOpacity=".19" />
         </linearGradient>
         <filter
           id="a"
@@ -169,10 +169,10 @@ export default function NameSVG() {
           height="325.117"
           x="2.74"
           y="-3.237"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
           filterUnits="userSpaceOnUse"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feGaussianBlur in="BackgroundImageFix" stdDeviation="2" />
           <feComposite
             in2="SourceAlpha"

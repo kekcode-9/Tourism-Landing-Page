@@ -4,11 +4,10 @@ import React, {
   useRef,
   useState,
   useContext,
-  useLayoutEffect,
 } from "react";
+import { useInView } from "react-intersection-observer";
 import { CldImage } from "next-cloudinary";
 import { AnimatePresence, motion } from "framer-motion";
-import gsap from "gsap";
 import { TourismContext } from "@/store/tourismStore";
 import Typography from "./common-components/typography";
 import constants from "@/utilities/constants";
@@ -55,6 +54,23 @@ export default function Places() {
 
   const [deltaYArr, updateDeltaYArr] = useState<number[]>([]);
   const [readytoScroll, toggleReadyToScroll] = useState<boolean>(true);
+
+  const {inView: topInView, ref: topRef } = useInView({
+    threshold: 1,
+    onChange(inView, entry) {
+      if (inView) {
+        console.log("topInView")
+      }
+    },
+  });
+  const {inView: bottomInView, ref: bottomRef } = useInView({
+    threshold: 1,
+    onChange(inView, entry) {
+      if (inView) {
+        console.log("bottomInview")
+      }
+    }
+  });
 
   let debounceTimer: ReturnType<typeof setTimeout>;
 
@@ -144,7 +160,7 @@ export default function Places() {
     (e: WheelEvent) => {
       // React.WheelEvent<HTMLDivElement>
       e.preventDefault();
-      console.log("test | handleWheelEvent called");
+      console.log("test | handleWheelEvent called | deltaYArr: ", deltaYArr);
 
       if (!deltaYArr.length) {
         console.log("test | new session");
@@ -154,8 +170,14 @@ export default function Places() {
         const firstDeltaY = latestScrollArr[0];
         const lastDeltaY = e.deltaY;
         const sameDir = firstDeltaY * lastDeltaY > 0; // check if both deltaY have the same sign
+        console.log(`isSameDir: ${sameDir} | firstDeltaY: ${firstDeltaY} | lastDeltaY: ${lastDeltaY}`);
 
-        if (sameDir && Math.abs(firstDeltaY - lastDeltaY) >= 30) {
+        /**
+         * for trackpad scroll, deltaY will change between consecutive scroll events in the same direction
+         * for mouse scroll, deltaY will remain the same between consecutive scroll events in the same direction
+         * and will change sign when the direction changes
+         */
+        if (sameDir && (Math.abs(firstDeltaY - lastDeltaY) >= 30 || firstDeltaY === lastDeltaY)) {
           // if the deltaY are both in same direction and their difference crosses the threshold
           const scrollUp = lastDeltaY < 0;
           let newPlaceIndex = currPlaceIndex;
@@ -256,9 +278,12 @@ export default function Places() {
       relative
       flex flex-col items-center justify-end lg:justify-start
       w-screen h-[100dvh] 
-      overflow-hidden
       bg-white text-black"
     >
+      {/* <div ref={topRef}
+        className="top-div absolute top-[-4px] z-50
+        w-full h-[4px] bg-[#FF0000]"
+      /> */}
       <div
         ref={textContainerRef}
         className={`texts-container
@@ -375,6 +400,10 @@ export default function Places() {
           );
         })}
       </div>
+      {/* <div ref={bottomRef}
+        className="bottom-div absolute bottom-[-4px] z-50
+        w-full h-[4px] bg-[#FF0000]"
+      /> */}
     </div>
   );
 }

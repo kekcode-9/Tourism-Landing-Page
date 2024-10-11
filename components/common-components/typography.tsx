@@ -3,13 +3,15 @@ import React from 'react';
 type TypographyProps = {
     isHeader?: boolean,
     children: React.ReactNode,
-    size?: string
+    size?: string,
+    align?: string
 }
 
 export default function Typography({
     isHeader,
     children,
-    size
+    size,
+    align
 }: TypographyProps) {
   return (
     <>
@@ -23,7 +25,8 @@ export default function Typography({
                 }
             </h2> :
             <p
-                className={`font-sans ${size || 'text-sm sm:text-base'}`}
+                className={`font-sans ${size || 'text-sm sm:text-base'}
+                ${align === "center" ? 'text-center' : 'text-left'}`}
             >
                 {
                     children

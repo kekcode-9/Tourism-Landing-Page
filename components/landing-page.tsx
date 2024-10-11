@@ -5,6 +5,8 @@ import Navbar from './common-components/navbar';
 import EntryLandingPage from './entry-landing-page';
 import Places from './landing-page-places';
 import Adventures from './adventures';
+import Footer from './footer';
+import CloudAnimation from './cloud-animation-lottie';
 
 export default function LandingPage() {
   const { state } = useContext(TourismContext);
@@ -24,10 +26,6 @@ export default function LandingPage() {
       {
         (placesScrollPos === 'end' && showAdventures) &&
         <Adventures/>
-      }
-      {
-        // placesScrollPos === 'end' &&
-        // <div className='relative w-screen h-screen bg-black'></div>
       }
     </>
   )

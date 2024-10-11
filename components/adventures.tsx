@@ -4,12 +4,13 @@ import { useInView } from "react-intersection-observer";
 import { CldImage } from "next-cloudinary";
 import gsap from "gsap";
 import { TourismContext } from "@/store/tourismStore";
+import CloudAnimation from "./cloud-animation-lottie";
 import Arrows from "./common-components/arrows";
 import { ACTIONS } from "@/store/actions";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import constants from "@/utilities/constants";
 import Typography from "./common-components/typography";
-import { getLines } from "@/utilities/utility-functions";
+import Footer from "./footer";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,6 +20,7 @@ const { TOGGLE_SHOW_ADVENTURES } = ACTIONS;
 
 export default function Adventures() {
   const [currAdventure, setCurrAdventure] = useState(0);
+  const [showEndAnimation, toggleShowEndAnimation] = useState(false);
 
   const { dispatch, state } = useContext(TourismContext);
   const { showAdventures } = state;
@@ -33,8 +35,9 @@ export default function Adventures() {
 
   const getScrollTriggerStart = () => {
     const width = window.innerWidth;
+    const height = window.innerHeight;
     if (width < 1536 && width > 1024) {
-      return "98% bottom";
+      return "96% bottom";
     } else {
       return "50% 40%";
     }
@@ -117,6 +120,12 @@ export default function Adventures() {
                   lastI = i;
                 }
               },
+              onLeave: () => {
+                if (i === ADVENTURES.length - 1) {
+                  console.log("last image disappeared");
+                  toggleShowEndAnimation(true);
+                }
+              },
               onEnterBack: () => {
                 if (Math.abs(lastI - i) === 1) {
                   setCurrAdventure(i);
@@ -142,9 +151,9 @@ export default function Adventures() {
   return (
     <div
       className="relative 
-    w-screen h-[100dvh] 
-    lg:pt-[6.5rem]
-    bg-[#ffffff]"
+      w-screen h-[100dvh] 
+      lg:pt-[6.5rem]
+      bg-[#ffffff]"
       ref={pageRef}
     >
       {!currAdventure ? (
@@ -209,7 +218,8 @@ export default function Adventures() {
           );
         })}
         <div
-          className="fixed right-0 max-lg:top-[60%] top-[45%] 
+          className="adventures-text
+          fixed right-0 max-lg:top-[60%] top-[45%] 
           w-full lg:max-2xl:w-[600px] 2xl:w-[800px]
           h-[40dvh]
           max-lg:p-[1rem] lg:pr-[160px] 2xl:pr-[240px] 
@@ -318,6 +328,15 @@ export default function Adventures() {
             })}
           </AnimatePresence>
         </div>
+        <Footer
+          onInView={() => {
+            currAdventure === ADVENTURES.length - 1 && setCurrAdventure(-1);
+          }}
+          onOut={() => {
+            currAdventure === -1 && setCurrAdventure(ADVENTURES.length - 1);
+            toggleShowEndAnimation(false);
+          }}
+        />
       </div>
     </div>
   );

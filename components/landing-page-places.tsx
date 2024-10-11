@@ -256,12 +256,12 @@ export default function Places() {
       }
     };
 
-    document.addEventListener("keydown", keyDownHandler);
-    window.addEventListener("wheel", debouncedWheelEvent);
+    // document.addEventListener("keydown", keyDownHandler);
+    // window.addEventListener("wheel", debouncedWheelEvent);
 
     return () => {
-      document.removeEventListener("keydown", keyDownHandler);
-      window.removeEventListener("wheel", debouncedWheelEvent);
+      // document.removeEventListener("keydown", keyDownHandler);
+      // window.removeEventListener("wheel", debouncedWheelEvent);
       if (debounceTimer) {
         clearTimeout(debounceTimer);
       }
@@ -278,7 +278,7 @@ export default function Places() {
       relative
       flex flex-col items-center justify-end lg:justify-start
       w-screen h-[100dvh] 
-      bg-white text-black"
+      bg-white text-black" onScroll={() => alert('scrolling')}
     >
       {/* <div ref={topRef}
         className="top-div absolute top-[-4px] z-50

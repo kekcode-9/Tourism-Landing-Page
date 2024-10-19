@@ -18,7 +18,21 @@ const { ADVENTURES } = constants;
 
 const { TOGGLE_SHOW_ADVENTURES } = ACTIONS;
 
+function AdventuresMobile() {
+  return (
+    <div className="adventures-mobile"></div>
+  )
+}
+
 export default function Adventures() {
+  return (
+    <>
+      <AdventuresDesktop/>
+    </>
+  )
+}
+
+function AdventuresDesktop() {
   const [currAdventure, setCurrAdventure] = useState(0);
   const [showEndAnimation, toggleShowEndAnimation] = useState(false);
 
@@ -36,7 +50,7 @@ export default function Adventures() {
   const getScrollTriggerStart = () => {
     const width = window.innerWidth;
     const height = window.innerHeight;
-    if (width < 1536 && width > 1024) {
+    if (width >= 1024 && width < 1536) {
       return "96% bottom";
     } else {
       return "50% 40%";
@@ -59,7 +73,6 @@ export default function Adventures() {
         new Array(6).fill("").map((item, i) => {
           gsap.to(imgRefsArr.current[i], {
             scrollTrigger: {
-              // horizontal: (window && window.innerWidth < 1024) ? true : false,
               scroller: adventuresRef.current,
               trigger: imgRefsArr.current[i],
               pin: imgRefsArr.current[i],
@@ -111,8 +124,7 @@ export default function Adventures() {
               start: window && getScrollTriggerStart(),
               end: window && getScrollTriggerEnd(), // '140% 10%',
               fastScrollEnd: 500,
-              snap: 1,
-              // markers: true,
+              markers: true,
               // scrub: (i && i<5) ? true : false,
               // onEnter onLeave onEnterBack onLeaveBack
               toggleActions: "play reverse play reverse",
@@ -153,7 +165,7 @@ export default function Adventures() {
 
   return (
     <div
-      className="relative 
+      className="adventures-desktop relative 
       w-screen h-[100dvh] 
       lg:pt-[6.5rem]
       bg-[#ffffff]"
@@ -331,7 +343,7 @@ export default function Adventures() {
             })}
           </AnimatePresence>
         </div>
-        <Footer
+        {/* <Footer
           onInView={() => {
             currAdventure === ADVENTURES.length - 1 && setCurrAdventure(-1);
           }}
@@ -339,7 +351,7 @@ export default function Adventures() {
             currAdventure === -1 && setCurrAdventure(ADVENTURES.length - 1);
             toggleShowEndAnimation(false);
           }}
-        />
+        /> */}
       </div>
     </div>
   );

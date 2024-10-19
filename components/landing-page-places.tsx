@@ -76,7 +76,7 @@ function PlacesMobile() {
               // if the end value changes, the snap will have to be updated too
               snap: {
                 snapTo: 1.055,
-                duration: 0.6,
+                duration: 0.3,
                 ease: "power2.inOut"
               }, 
               // markers: true,

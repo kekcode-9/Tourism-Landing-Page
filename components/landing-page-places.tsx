@@ -131,8 +131,10 @@ function PlacesMobile() {
       ref={ref}
       id="places-mobile"
       className="places-mobile
-      flex items-start
-      lg:hidden"
+      lg:hidden flex items-start 
+      w-screen overflow-scroll
+      bg-columbia_blue
+      "
     >
       {PLACES.map((place, i) => {
         const { name, description, image } = place;

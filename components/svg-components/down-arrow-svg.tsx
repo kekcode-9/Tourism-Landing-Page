@@ -13,7 +13,7 @@ export default function DownArrow() {
       <path
         d="M37 74L69.0429 33.5H4.95706L37 74Z"
         fill="white"
-        fill-opacity="0.61"
+        fillOpacity="0.61"
       />
       <path d="M37 54L69.0429 13.5H4.95706L37 54Z" fill="white" />
     </svg>

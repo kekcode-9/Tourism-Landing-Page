@@ -4,15 +4,19 @@ import React, {
   useRef,
   useState,
   useContext,
+  useLayoutEffect,
 } from "react";
-import { useInView } from "react-intersection-observer";
 import { CldImage } from "next-cloudinary";
 import { AnimatePresence, motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { TourismContext } from "@/store/tourismStore";
 import Typography from "./common-components/typography";
 import constants from "@/utilities/constants";
 import { ACTIONS } from "@/store/actions";
 import Arrows from "./common-components/arrows";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const { PLACES } = constants;
 
@@ -40,7 +44,176 @@ PLACES.map((place, i) => {
   placesImages.push(image);
 });
 
+function PlacesMobile() {
+  const ref = useRef<HTMLDivElement>(null);
+  const placesRefArr = useRef<(HTMLDivElement | null)[]>([]);
+  const imagesRefArr = useRef<(HTMLDivElement | null)[]>([]);
+  const textRefArr = useRef<(HTMLDivElement | null)[]>([]);
+
+  useLayoutEffect(() => {
+    let ctx = gsap.context(() => {
+      if (placesRefArr.current) {
+        const contents = gsap.utils.toArray("#places-mobile .content");
+        const tl: gsap.core.Timeline = gsap.timeline();
+        tl.to(contents, {
+          xPercent: -100 * (contents.length),
+          x: () => window.innerWidth,
+          ease: "none",
+          scrollTrigger: {
+            trigger: "#places-mobile",
+            pin: true,
+            scrub: true,
+            onUpdate: (self) => {
+              let currItem = -1;
+              imagesRefArr.current.forEach((image, i) => {
+                if (image) {
+                  const rect = image.getBoundingClientRect();
+                  const leftEdge = rect.left;
+                  const rightEdge = rect.right;
+                  const viewportWidth = window.innerWidth;
+                  const isInViewport = leftEdge <= viewportWidth * 0.7; // Check if the left edge crosses 70% of viewport width
+                  // console.log(`image: ${i} | rightEdge: ${rightEdge} | viewport * 0.2: ${viewportWidth*0.2} | leftEdge: ${leftEdge} | viewport * 0.7: ${viewportWidth * 0.7}`)
+                  
+                  // Apply opacity animation based on the horizontal scroll position
+                  if (isInViewport) {
+                    currItem = i;
+                    console.log(`currItem: ${i}`)
+                    gsap.to(image, {
+                      opacity: 1, 
+                      duration: 0.5 
+                    });
+                  } 
+                  if (rightEdge <= viewportWidth * 0.7 || leftEdge >= viewportWidth * 0.7) {
+                    gsap.to(image, { opacity: 0, duration: 0.5 });
+                  }
+                }
+              });
+              textRefArr.current.forEach((text, i) => {
+                if (text) {
+                  if (i !== currItem) {
+                    gsap.to(text, {
+                      opacity: 0,
+                      duration: 0.5
+                    })
+                  } else {
+                    gsap.to(text, {
+                      opacity: 1,
+                      duration: 0.5
+                    })
+                  }
+                }
+              })
+            }
+          },
+        });
+      }
+    });
+
+    return () => {
+      ctx.revert();
+    };
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      id="places-mobile"
+      className="places-mobile
+      flex items-start
+      lg:hidden"
+    >
+      {PLACES.map((place, i) => {
+        const { name, description, image } = place;
+
+        return (
+          <div
+            key={name.toLowerCase().replace("", "_")}
+            ref={(ele) => (placesRefArr.current[i] = ele)}
+            className="content
+              relative
+              flex flex-col items-center justify-end shrink-0
+              w-screen h-[100dvh] 
+              bg-white text-black"
+          >
+            <div
+              className="images-container
+                absolute top-[4.375rem] left-0
+                flex flex-col
+                w-screen 
+                h-[28dvh] sm:h-[80dvh]"
+            >
+              <div
+                ref={(ele) => (imagesRefArr.current[i] = ele)}
+                className="mask-inner
+                    relative
+                    w-full
+                    h-[28dvh] sm:h-[80dvh]"
+              >
+                <CldImage
+                  src={image}
+                  alt={""}
+                  fill
+                  loading="lazy"
+                  className="place-image 
+                      object-cover"
+                />
+              </div>
+            </div>
+            <div
+              className={`texts-container
+                relative z-20
+                flex flex-col items-center justify-start 
+                w-screen h-[51dvh]
+                text-center 
+                text-dark_slate_gray
+                bg-white
+                shadow-[-1px_-41px_102px_25px_rgba(255,255,255,1)]
+                max-lg:mb-[3rem]`}
+            >
+              <motion.div
+                ref={(ele) => (textRefArr.current[i] = ele)}
+                key={name.replace(" ", "_")}
+                className={`text-wrapper
+                    flex flex-col items-start gap-6
+                    w-screen sm:w-[70vw] xl:w-[50vw]
+                    max-sm:px-4
+                    ${window.innerHeight >= 800 ? "sm:my-20" : "sm:my-9"}
+                    max-lg:text-left`}
+                data-index={i}
+              >
+                <Typography isHeader size="text-[2rem] sm:text-2xl">
+                  {name}
+                </Typography>
+                <Typography size="text-xs sm:text-base">
+                  {description}
+                </Typography>
+              </motion.div>
+            </div>
+            <Arrows
+              onUpArrowClick={() => {
+                // handleArrowIconClick(true);
+              }}
+              onDownArrowClick={() => {
+                // handleArrowIconClick(false);
+              }}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function Places() {
+  return (
+    <>
+      {window && window.innerWidth < 1024 && <PlacesMobile />}
+      {window && window.innerWidth >= 1024 && <PlacesDesktop />}
+    </>
+  );
+}
+
+function PlacesDesktop() {
   const { dispatch, state } = useContext(TourismContext);
   const { placesScrollPos, showAdventures } = state;
 
@@ -54,23 +227,6 @@ export default function Places() {
 
   const [deltaYArr, updateDeltaYArr] = useState<number[]>([]);
   const [readytoScroll, toggleReadyToScroll] = useState<boolean>(true);
-
-  const {inView: topInView, ref: topRef } = useInView({
-    threshold: 1,
-    onChange(inView, entry) {
-      if (inView) {
-        console.log("topInView")
-      }
-    },
-  });
-  const {inView: bottomInView, ref: bottomRef } = useInView({
-    threshold: 1,
-    onChange(inView, entry) {
-      if (inView) {
-        console.log("bottomInview")
-      }
-    }
-  });
 
   let debounceTimer: ReturnType<typeof setTimeout>;
 
@@ -98,9 +254,6 @@ export default function Places() {
   }, [imgWrapperRef.current]);
 
   const scroller = (newPlaceIndex: number, scrollUp: boolean) => {
-    console.log(
-      `scroller: newPlaceIndex: ${newPlaceIndex} | scrollUp: ${scrollUp}`
-    );
     // scroll image
     const nextImgPos = imagesRefArr.current[newPlaceIndex]?.offsetTop || 0;
     const nextImgHeight =
@@ -170,14 +323,20 @@ export default function Places() {
         const firstDeltaY = latestScrollArr[0];
         const lastDeltaY = e.deltaY;
         const sameDir = firstDeltaY * lastDeltaY > 0; // check if both deltaY have the same sign
-        console.log(`isSameDir: ${sameDir} | firstDeltaY: ${firstDeltaY} | lastDeltaY: ${lastDeltaY}`);
+        console.log(
+          `isSameDir: ${sameDir} | firstDeltaY: ${firstDeltaY} | lastDeltaY: ${lastDeltaY}`
+        );
 
         /**
          * for trackpad scroll, deltaY will change between consecutive scroll events in the same direction
          * for mouse scroll, deltaY will remain the same between consecutive scroll events in the same direction
          * and will change sign when the direction changes
          */
-        if (sameDir && (Math.abs(firstDeltaY - lastDeltaY) >= 30 || firstDeltaY === lastDeltaY)) {
+        if (
+          sameDir &&
+          (Math.abs(firstDeltaY - lastDeltaY) >= 30 ||
+            firstDeltaY === lastDeltaY)
+        ) {
           // if the deltaY are both in same direction and their difference crosses the threshold
           const scrollUp = lastDeltaY < 0;
           let newPlaceIndex = currPlaceIndex;
@@ -256,17 +415,42 @@ export default function Places() {
       }
     };
 
-    // document.addEventListener("keydown", keyDownHandler);
-    // window.addEventListener("wheel", debouncedWheelEvent);
+    document.addEventListener("keydown", keyDownHandler);
+    window.addEventListener("wheel", debouncedWheelEvent);
 
     return () => {
-      // document.removeEventListener("keydown", keyDownHandler);
-      // window.removeEventListener("wheel", debouncedWheelEvent);
+      document.removeEventListener("keydown", keyDownHandler);
+      window.removeEventListener("wheel", debouncedWheelEvent);
       if (debounceTimer) {
         clearTimeout(debounceTimer);
       }
     };
   }, [handleWheelEvent, readytoScroll]);
+
+  // useLayoutEffect(() => {
+  //   const ctx = gsap.context(() => {
+  //     if(imgWrapperRef.current) {
+  //       const images = gsap.utils.toArray("#content .mask-outer");
+  //       console.log("hello")
+
+  //       gsap.to(images, {
+  //         yPercent: -100 * (images.length - 1),
+  //         onComplete: () => {
+  //           console.log("we are done here")
+  //         },
+  //         scrollTrigger: {
+  //           trigger: "#content",
+  //           pin: true,
+  //           scrub: false
+  //         }
+  //       })
+  //     }
+  //   })
+
+  //   return () => {
+  //     ctx.revert()
+  //   }
+  // }, [])
 
   if (showAdventures) {
     return;
@@ -274,13 +458,12 @@ export default function Places() {
 
   return (
     <div
-      className="landing-page-places-content-div
+      id="content"
+      className="places-desktop content
       relative
-      flex flex-col items-center justify-end lg:justify-start
+      max-lg:hidden flex flex-col items-center justify-end lg:justify-start
       w-screen h-[100dvh] 
-      bg-white text-black" onScroll={() => {
-        alert('scrolling');
-      }}
+      bg-white text-black"
     >
       {/* <div ref={topRef}
         className="top-div absolute top-[-4px] z-50
@@ -365,6 +548,7 @@ export default function Places() {
       />
       <div
         ref={imgWrapperRef}
+        id="images-container"
         className="images-container
         absolute max-lg:top-[4.375rem] lg:bottom-0 left-0
         flex flex-col
@@ -402,10 +586,6 @@ export default function Places() {
           );
         })}
       </div>
-      {/* <div ref={bottomRef}
-        className="bottom-div absolute bottom-[-4px] z-50
-        w-full h-[4px] bg-[#FF0000]"
-      /> */}
     </div>
   );
 }

@@ -13,8 +13,8 @@ export default function Arrows({
     onUpArrowClick,
     onDownArrowClick,
     inset,
-    showUpArrow=true,
-    showDownArrow=true
+    showUpArrow,
+    showDownArrow
 } : ArrowsPropTypes) {
   return (
     <div
@@ -23,7 +23,7 @@ export default function Arrows({
         max-lg:flex flex-col lg:hidden gap-4`}
       >
         {
-          showUpArrow ?
+          (showUpArrow === true) ?
           <div
             className='up-arrow w-full h-fit 
             p-2
@@ -35,7 +35,7 @@ export default function Arrows({
           </div> : <></>
         }
         {
-          showDownArrow ?
+          (showDownArrow === true) ?
           <div
             className='down-arrow w-full h-fit 
             p-2

@@ -27,7 +27,6 @@ export default function EntryLandingPage({
 }) {
   const imageRef = useRef<HTMLImageElement>(null);
   const lakeImageRef = useRef<HTMLImageElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
   const taglineRef = useRef<HTMLDivElement>(null);
 
   const { dispatch } = useContext(TourismContext);
@@ -57,14 +56,6 @@ export default function EntryLandingPage({
           opacity: 0,
           duration: 0.5,
         })
-        .to(
-          overlayRef.current,
-          {
-            opacity: 0,
-            duration: 0.3,
-          },
-          "<+=0.01"
-        )
         .set(imageRef.current, {
           display: "none",
         })
@@ -77,21 +68,11 @@ export default function EntryLandingPage({
           },
           "<+=0.1"
         )
-        .set(overlayRef.current, {
-          display: "none",
-        })
         .to(taglineRef.current, {
           delay: 0.5,
           opacity: 1,
           duration: 1,
         });
-    }
-    if (overlayRef.current) {
-      gsap.to(overlayRef.current, {
-        opacity: 1,
-        duration: 1,
-        ease: "power1.out",
-      });
     }
 
     const handleWheelEvent = (e: WheelEvent) => {
@@ -120,7 +101,7 @@ export default function EntryLandingPage({
       window.removeEventListener('wheel', handleWheelEvent);
       window.removeEventListener('keydown', handleKeyDownEvent);
     }
-  }, [imageRef, overlayRef]);
+  }, [imageRef]);
 
   return (
     <div
@@ -154,14 +135,6 @@ export default function EntryLandingPage({
         </OutsideClickHandler>
       )}
       <NameSVG />
-      <div
-        ref={overlayRef}
-        className="overlay-div
-        absolute top-0 left-0 z-10
-        w-full h-full
-        bg-[#012B41] bg-opacity-[0.25]
-        opacity-0"
-      />
       <CldImage
         ref={lakeImageRef}
         src="https://res.cloudinary.com/dxvx3y6ch/image/upload/f_auto,q_auto/v1/tourism/pn6ehncwz5yecfsukysh"
@@ -222,7 +195,7 @@ export default function EntryLandingPage({
         alt="green mountains of meghalaya"
         fill
         className="absolute top-0 left-0 object-cover 
-        will-change-auto opacity-0 scale-[1.18] -translate-y-[50px] blur-[6px] origin-center"
+        will-change-auto opacity-0 scale-[1.18] blur-[6px] origin-center"
         loading="lazy"
         quality={100}
       />

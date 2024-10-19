@@ -51,7 +51,7 @@ function PlacesMobile() {
   const textRefArr = useRef<(HTMLDivElement | null)[]>([]);
 
   useLayoutEffect(() => {
-    let ctx = gsap.context(() => {
+    /*let ctx = gsap.context(() => {
       if (placesRefArr.current) {
         const contents = gsap.utils.toArray("#places-mobile .content");
         const tl: gsap.core.Timeline = gsap.timeline();
@@ -107,11 +107,23 @@ function PlacesMobile() {
           },
         });
       }
-    });
+    });*/
 
-    return () => {
-      ctx.revert();
-    };
+    // let ctx = gsap.context(() => {
+    //   if (placesRefArr.current) {
+    //     const contents = gsap.utils.toArray("#places-mobile .content");
+    //     const tl: gsap.core.Timeline = gsap.timeline();
+    //     tl.to(contents, {
+    //       scrollTrigger: {
+    //         horizontal: true
+    //       }
+    //     })
+    //   }
+    // })
+
+    // return () => {
+    //   ctx.revert();
+    // };
   }, []);
 
   return (

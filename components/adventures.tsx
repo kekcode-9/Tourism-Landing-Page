@@ -59,6 +59,7 @@ export default function Adventures() {
         new Array(6).fill("").map((item, i) => {
           gsap.to(imgRefsArr.current[i], {
             scrollTrigger: {
+              // horizontal: (window && window.innerWidth < 1024) ? true : false,
               scroller: adventuresRef.current,
               trigger: imgRefsArr.current[i],
               pin: imgRefsArr.current[i],
@@ -109,6 +110,8 @@ export default function Adventures() {
                */
               start: window && getScrollTriggerStart(),
               end: window && getScrollTriggerEnd(), // '140% 10%',
+              fastScrollEnd: 500,
+              snap: 1,
               // markers: true,
               // scrub: (i && i<5) ? true : false,
               // onEnter onLeave onEnterBack onLeaveBack

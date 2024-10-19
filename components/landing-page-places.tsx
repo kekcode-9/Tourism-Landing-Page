@@ -45,85 +45,78 @@ PLACES.map((place, i) => {
 });
 
 function PlacesMobile() {
+  const { dispatch, state } = useContext(TourismContext);
+
+  const [currIdx, setCurrIdx] = useState(0);
+
   const ref = useRef<HTMLDivElement>(null);
   const placesRefArr = useRef<(HTMLDivElement | null)[]>([]);
   const imagesRefArr = useRef<(HTMLDivElement | null)[]>([]);
   const textRefArr = useRef<(HTMLDivElement | null)[]>([]);
 
   useLayoutEffect(() => {
-    /*let ctx = gsap.context(() => {
+    let ctx = gsap.context(() => {
       if (placesRefArr.current) {
-        const contents = gsap.utils.toArray("#places-mobile .content");
-        const tl: gsap.core.Timeline = gsap.timeline();
-        tl.to(contents, {
-          xPercent: -100 * (contents.length),
-          x: () => window.innerWidth,
-          ease: "none",
-          scrollTrigger: {
-            trigger: "#places-mobile",
-            pin: true,
-            scrub: true,
-            onUpdate: (self) => {
-              let currItem = -1;
-              imagesRefArr.current.forEach((image, i) => {
-                if (image) {
-                  const rect = image.getBoundingClientRect();
-                  const leftEdge = rect.left;
-                  const rightEdge = rect.right;
-                  const viewportWidth = window.innerWidth;
-                  const isInViewport = leftEdge <= viewportWidth * 0.7; // Check if the left edge crosses 70% of viewport width
-                  // console.log(`image: ${i} | rightEdge: ${rightEdge} | viewport * 0.2: ${viewportWidth*0.2} | leftEdge: ${leftEdge} | viewport * 0.7: ${viewportWidth * 0.7}`)
-                  
-                  // Apply opacity animation based on the horizontal scroll position
-                  if (isInViewport) {
-                    currItem = i;
-                    console.log(`currItem: ${i}`)
-                    gsap.to(image, {
-                      opacity: 1, 
-                      duration: 0.5 
-                    });
-                  } 
-                  if (rightEdge <= viewportWidth * 0.7 || leftEdge >= viewportWidth * 0.7) {
-                    gsap.to(image, { opacity: 0, duration: 0.5 });
-                  }
-                }
-              });
-              textRefArr.current.forEach((text, i) => {
-                if (text) {
-                  if (i !== currItem) {
-                    gsap.to(text, {
-                      opacity: 0,
-                      duration: 0.5
-                    })
-                  } else {
-                    gsap.to(text, {
-                      opacity: 1,
-                      duration: 0.5
-                    })
-                  }
-                }
-              })
+        placesRefArr.current.forEach((place, i) => {
+          gsap.to(imagesRefArr.current[i], {
+            opacity: 1,
+            duration: 1,
+            scrollTrigger: {
+              horizontal: true,
+              scroller: ref.current,
+              trigger: place,
+              start: "0% 0%",
+              end: "100% 5%",
+              pin: imagesRefArr.current[i],
+              pinType: "fixed",
+              pinSpacing: true,
+              anticipatePin: 1,
+              scrub: false,
+              // so that the image's left edge always aligns with the scroller left edge
+              // if the end value changes, the snap will have to be updated too
+              snap: {
+                snapTo: 1.055,
+                duration: 0.6,
+                ease: "power2.inOut"
+              }, 
+              // markers: true,
             }
-          },
-        });
+          })
+          gsap.to(textRefArr.current[i], {
+            opacity: 1,
+            duration: 1,
+            scrollTrigger: {
+              horizontal: true,
+              scroller: ref.current,
+              trigger: place,
+              start: "0% 30%",
+              end: "70% 50%",
+              scrub: false,
+              // onEnter onLeave onEnterBack onLeaveBack
+              toggleActions: "play reverse play reverse",
+              onEnter: () => setCurrIdx(i),
+              onLeave: () => {
+                if(i === PLACES.length - 1) {
+                  dispatch({
+                    type: SET_PLACES_SCROLL_POS,
+                    payload: "end",
+                  });
+                  dispatch({
+                    type: TOGGLE_SHOW_ADVENTURES,
+                    payload: true,
+                  });
+                }
+              },
+              onEnterBack: () => setCurrIdx(i)
+            }
+          })
+        })
       }
-    });*/
+    })
 
-    // let ctx = gsap.context(() => {
-    //   if (placesRefArr.current) {
-    //     const contents = gsap.utils.toArray("#places-mobile .content");
-    //     const tl: gsap.core.Timeline = gsap.timeline();
-    //     tl.to(contents, {
-    //       scrollTrigger: {
-    //         horizontal: true
-    //       }
-    //     })
-    //   }
-    // })
-
-    // return () => {
-    //   ctx.revert();
-    // };
+    return () => {
+      ctx.revert();
+    };
   }, []);
 
   return (
@@ -154,14 +147,14 @@ function PlacesMobile() {
                 absolute top-[4.375rem] left-0
                 flex flex-col
                 w-screen 
-                h-[28dvh] sm:h-[80dvh]"
+                h-[28dvh] sm:h-[40dvh]"
             >
               <div
                 ref={(ele) => (imagesRefArr.current[i] = ele)}
-                className="mask-inner
+                className="mask-inner pointer-events-none
                     relative
                     w-full
-                    h-[28dvh] sm:h-[80dvh]"
+                    h-[28dvh] sm:h-[80dvh] opacity-1"
               >
                 <CldImage
                   src={image}
@@ -181,7 +174,7 @@ function PlacesMobile() {
                 text-center 
                 text-dark_slate_gray
                 bg-white
-                shadow-[-1px_-41px_102px_25px_rgba(255,255,255,1)]
+                shadow-[-1px_-50px_102px_0px_rgba(255,255,255,1)]
                 max-lg:mb-[3rem]`}
             >
               <motion.div
@@ -192,7 +185,7 @@ function PlacesMobile() {
                     w-screen sm:w-[70vw] xl:w-[50vw]
                     max-sm:px-4
                     ${window.innerHeight >= 800 ? "sm:my-20" : "sm:my-9"}
-                    max-lg:text-left`}
+                    max-lg:text-left opacity-0`}
                 data-index={i}
               >
                 <Typography isHeader size="text-[2rem] sm:text-2xl">
@@ -214,6 +207,25 @@ function PlacesMobile() {
           </div>
         );
       })}
+      <div
+        className="absolute z-50 bottom-8
+        flex items-center gap-1 justify-center
+        w-screen
+        py-1"
+      >
+        {
+          new Array(PLACES.length).fill("").map((item, i) => {
+            return (
+              <div
+                className={`w-2 h-2
+                rounded-full
+                border-[1px] border-dark_slate_gray
+                ${i === currIdx ? 'bg-columbia_blue' : 'bg-white'}`}
+              />
+            )
+          })
+        }
+      </div>
     </div>
   );
 }
